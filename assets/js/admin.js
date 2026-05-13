@@ -1,21 +1,3 @@
-
-
-const adminMenuToggle = document.getElementById('admin-menu-toggle');
-const adminSidebar = document.querySelector('.admin-sidebar');
-
-if (adminMenuToggle && adminSidebar) {
-  adminMenuToggle.addEventListener('click', () => {
-    adminSidebar.classList.toggle('mobile-open');
-  });
-}
-
-
-/**
- * SP GlowPetals — Admin Auth & Dashboard JS
- * Authentication is handled via encoded config, not plain text.
- */
-
-'use strict';
 import {
 
   db,
@@ -35,6 +17,25 @@ import {
   getDownloadURL
 
 } from './firebase.js';
+
+'use strict';
+
+const adminMenuToggle = document.getElementById('admin-menu-toggle');
+const adminSidebar = document.querySelector('.admin-sidebar');
+
+if (adminMenuToggle && adminSidebar) {
+  adminMenuToggle.addEventListener('click', () => {
+    adminSidebar.classList.toggle('mobile-open');
+  });
+}
+
+
+/**
+ * SP GlowPetals — Admin Auth & Dashboard JS
+ * Authentication is handled via encoded config, not plain text.
+ */
+
+
 
 
 /* ============================================================
