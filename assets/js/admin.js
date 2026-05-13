@@ -1,3 +1,23 @@
+import {
+
+  db,
+
+  storage,
+
+  collection,
+
+  addDoc,
+
+  getDocs,
+
+  ref,
+
+  uploadBytes,
+
+  getDownloadURL
+
+} from './firebase.js';
+
 const adminMenuToggle = document.getElementById('admin-menu-toggle');
 const adminSidebar = document.querySelector('.admin-sidebar');
 
@@ -423,7 +443,7 @@ setTimeout(() => {
     return document.getElementById(id)?.classList.contains('on') || false;
   }
 
-  function saveProduct() {
+  async function saveProduct() {
     const name = document.getElementById('product-name-input')?.value.trim();
     const category = document.getElementById('product-category')?.value;
     const price = parseFloat(document.getElementById('product-price')?.value);
@@ -454,7 +474,47 @@ setTimeout(() => {
       DB.updateProduct(editingId, productData);
       Toast.success('Product updated successfully!');
     } else {
-      DB.addProduct(productData);
+     // IMAGE FILE
+const fileInput = document.getElementById('product-image');
+
+const file = fileInput.files[0];
+
+let imageURL = '';
+
+
+// UPLOAD IMAGE TO FIREBASE
+if (file) {
+
+  const imageRef = ref(
+
+    storage,
+
+    `products/${Date.now()}-${file.name}`
+
+  );
+
+  await uploadBytes(imageRef, file);
+
+  imageURL = await getDownloadURL(imageRef);
+
+}
+
+
+// ADD IMAGE URL
+productData.images = [imageURL];
+
+
+// SAVE TO FIRESTORE
+await addDoc(
+
+  collection(db, "products"),
+
+  productData
+
+);
+
+
+Toast.success('Product added successfully!');
       Toast.success('Product added successfully!');
     }
 
