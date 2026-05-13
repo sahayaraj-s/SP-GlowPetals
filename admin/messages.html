@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Messages — SP GlowPetals Admin</title>
+  <link rel="icon" type="image/png" href="../assets/images/ti.jpeg">
+  <link rel="stylesheet" href="../assets/css/variables.css">
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/admin.css">
+</head>
+<body class="admin-body">
+  <div class="admin-layout">
+    <div id="admin-sidebar-placeholder"></div>
+    <div class="admin-main">
+      <div id="admin-topbar-placeholder"></div>
+      <div class="admin-content">
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div class="admin-card-title">💬 Contact Messages</div>
+            <button class="btn btn-secondary btn-sm" onclick="clearMessages()">Clear All</button>
+          </div>
+          <div id="messages-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="toast-container"></div>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/admin.js"></script>
+  <script src="admin-layout.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      injectAdminLayout('Messages', 'messages');
+      if (!Auth.requireAuth()) return;
+      document.getElementById('admin-username').textContent = Auth.getUser();
+      renderMessages();
+      document.querySelectorAll('.admin-logout').forEach(btn => btn.addEventListener('click', () => { if(confirm('Logout?')) Auth.logout(); }));
+    });
+
+    function renderMessages() {
+      const container = document.getElementById('messages-list');
+      const messages = DB.get('contact_messages') || [];
+      if (!messages.length) {
+        container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">💬</div><h3>No messages yet</h3><p>Contact form submissions will appear here.</p></div>`;
+        return;
+      }
+      container.innerHTML = messages.map((m, i) => `
+        <div style="padding:var(--space-lg);border-bottom:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:var(--space-md);flex-wrap:wrap;margin-bottom:var(--space-sm)">
+            <div>
+              <div style="font-weight:700;color:var(--text-primary)">${m.name}</div>
+              <div style="font-size:.78rem;color:var(--text-muted)">${m.email} · ${new Date(m.date).toLocaleString('en-IN')}</div>
+              <div style="font-size:.78rem;color:var(--primary);font-weight:600;margin-top:2px">${m.subject}</div>
+            </div>
+            <div style="display:flex;gap:var(--space-sm)">
+              <a href="mailto:${m.email}?subject=Re: ${m.subject}" class="btn btn-secondary btn-sm">Reply</a>
+              <a href="https://wa.me/?text=${encodeURIComponent('Reply to '+m.name+': ')}" class="btn btn-whatsapp btn-sm" target="_blank">WhatsApp</a>
+            </div>
+          </div>
+          <p style="font-size:.88rem;color:var(--text-secondary);line-height:1.7;margin:0">${m.message}</p>
+        </div>`).join('');
+    }
+
+    function clearMessages() {
+      if (!confirm('Clear all messages?')) return;
+      DB.set('contact_messages', []);
+      renderMessages();
+      Toast.success('Messages cleared');
+    }
+  </script>
+</body>
+</html>

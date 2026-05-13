@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login — SP GlowPetals</title>
+  <link rel="icon" type="image/jpeg" href="../assets/images/ti.jpeg">
+  <link rel="stylesheet" href="../assets/css/variables.css">
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/admin.css">
+</head>
+<body class="admin-body">
+
+  <div class="login-page">
+    <!-- Brand Side -->
+    <div class="login-brand-side">
+      <div style="position:relative;z-index:1;text-align:center">
+        <img src="../assets/images/ti.jpeg" alt="SP GlowPetals" style="height:64px;margin:0 auto var(--space-lg);display:block" onerror="this.style.display='none'">
+        <div class="login-brand-logo-text">SP GlowPetals</div>
+        <div class="login-brand-tagline">Admin Dashboard</div>
+        <div style="width:60px;height:2px;background:rgba(255,255,255,.3);margin:var(--space-xl) auto"></div>
+        <p style="color:rgba(255,255,255,.65);font-size:.9rem;max-width:280px;line-height:1.8">
+          Manage your products, banners, orders and grow your gifting brand with ease.
+        </p>
+        <div style="margin-top:var(--space-2xl);display:flex;flex-direction:column;gap:var(--space-md)">
+          <div style="display:flex;align-items:center;gap:12px;color:rgba(255,255,255,.7);font-size:.85rem">
+            <span style="font-size:1.2rem">📦</span> Product Management
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;color:rgba(255,255,255,.7);font-size:.85rem">
+            <span style="font-size:1.2rem">🖼️</span> Banner Control
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;color:rgba(255,255,255,.7);font-size:.85rem">
+            <span style="font-size:1.2rem">📊</span> Dashboard Analytics
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;color:rgba(255,255,255,.7);font-size:.85rem">
+            <span style="font-size:1.2rem">🛒</span> Order Management
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Side -->
+    <div class="login-form-side">
+      <div class="login-form-box">
+        <img src="../assets/images/ti.jpeg" alt="Logo" style="height:48px;margin-bottom:var(--space-xl);display:none" id="login-logo" onerror="this.style.display='none'">
+        <h1 class="login-title">Welcome💐</h1>
+        <p class="login-sub">Sign in to your admin dashboard</p>
+
+        <div id="login-error" style="display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:var(--radius-md);padding:12px 16px;font-size:.85rem;color:#ef4444;margin-bottom:var(--space-lg)"></div>
+
+        <form id="admin-login-form">
+          <div class="form-group">
+            <label class="form-label">Username</label>
+            <input type="text" class="form-input" id="login-username" placeholder="Enter username" autocomplete="username" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <div style="position:relative">
+              <input type="password" class="form-input" id="login-password" placeholder="Enter password" autocomplete="current-password" required style="padding-right:48px">
+              <button type="button" id="toggle-password" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);background:none;border:none;cursor:pointer;font-size:.9rem">👁️</button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:var(--space-lg);padding:14px">Sign In →</button>
+        </form>
+
+        <div style="margin-top:var(--space-2xl);padding:var(--space-md);background:var(--bg-secondary);border-radius:var(--radius-md);font-size:.78rem;color:var(--text-muted)">
+          <div style="font-weight:600;margin-bottom:6px;color:var(--text-secondary)">Default Credentials</div>
+          <div>Username: <code style="background:var(--bg-card);padding:2px 6px;border-radius:4px">admin</code></div>
+          <div style="margin-top:4px">Password: <code style="background:var(--bg-card);padding:2px 6px;border-radius:4px">GlowPetals#2025</code></div>
+          <div style="margin-top:8px;color:var(--text-muted);font-size:.72rem">⚠️ Change credentials in admin settings after first login.</div>
+        </div>
+
+        <div style="margin-top:var(--space-lg);text-align:center">
+          <a href="../index.html" style="font-size:.82rem;color:var(--text-muted)">← Back to Store</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/admin.js"></script>
+</body>
+</html>

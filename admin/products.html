@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products — SP GlowPetals Admin</title>
+  <link rel="icon" type="image/png" href="../assets/images/ti.jpeg">
+  <link rel="stylesheet" href="../assets/css/variables.css">
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/admin.css">
+</head>
+<body class="admin-body">
+
+  <div class="admin-layout">
+    <div id="admin-sidebar-placeholder"></div>
+
+    <div class="admin-main">
+      <div id="admin-topbar-placeholder"></div>
+
+      <div class="admin-content">
+
+        <!-- Add/Edit Product Form -->
+        <div class="admin-card" style="margin-bottom:var(--space-xl)">
+          <div class="admin-card-header">
+            <div class="admin-card-title" id="form-title">Add New Product</div>
+            <button id="cancel-edit" class="btn btn-secondary btn-sm" style="display:none">✕ Cancel Edit</button>
+          </div>
+
+          <form id="product-form">
+            <div class="admin-form-grid">
+
+              <!-- Name -->
+              <div class="form-group">
+                <label class="form-label">Product Name *</label>
+                <input type="text" class="form-input" id="product-name-input" placeholder="e.g. Rose Scented Luxury Candle">
+              </div>
+
+              <!-- Category -->
+              <div class="form-group">
+                <label class="form-label">Category *</label>
+                <select class="form-select" id="product-category">
+                  <option value="">Select Category</option>
+                </select>
+              </div>
+
+              <!-- Price -->
+              <div class="form-group">
+                <label class="form-label">Price (₹) *</label>
+                <input type="number" class="form-input" id="product-price" placeholder="599" min="0" step="1">
+              </div>
+
+              <!-- Discount -->
+              <div class="form-group">
+                <label class="form-label">Discount (%)</label>
+                <input type="number" class="form-input" id="product-discount" placeholder="0" min="0" max="99" step="1" value="0">
+              </div>
+
+              <!-- Stock -->
+              <div class="form-group">
+                <label class="form-label">Stock Quantity *</label>
+                <input type="number" class="form-input" id="product-stock" placeholder="50" min="0">
+              </div>
+
+              <!-- SKU -->
+              <div class="form-group">
+                <label class="form-label">SKU / Product Code</label>
+                <input type="text" class="form-input" id="product-sku" placeholder="SPGP-001">
+              </div>
+
+              <!-- Ratings -->
+              <div class="form-group">
+                <label class="form-label">Rating (0–5)</label>
+                <input type="number" class="form-input" id="product-ratings" placeholder="4.5" min="0" max="5" step="0.1" value="0">
+              </div>
+
+              <!-- Review Count -->
+              <div class="form-group">
+                <label class="form-label">Review Count</label>
+                <input type="number" class="form-input" id="product-reviews" placeholder="0" min="0" value="0">
+              </div>
+
+              <!-- Tags -->
+              <div class="form-group admin-form-full">
+                <label class="form-label">Tags (comma-separated)</label>
+                <input type="text" class="form-input" id="product-tags-input" placeholder="candle, luxury, gift, birthday">
+              </div>
+
+              <!-- Description -->
+              <div class="form-group admin-form-full">
+                <label class="form-label">Description</label>
+                <textarea class="form-textarea" id="product-description" rows="4" placeholder="Write a detailed product description…"></textarea>
+              </div>
+
+              <!-- Product Images -->
+              <div class="form-group admin-form-full">
+                <label class="form-label">Product Images (File Paths)</label>
+                <div style="display:flex;gap:var(--space-sm);margin-bottom:var(--space-sm)">
+                  <input 
+  type="file" 
+  id="product-image" 
+  accept="image/*"
+  multiple
+>
+                  
+                </div>
+                <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:var(--space-sm)">
+                  💡 First image will be used as the main product photo. Add multiple images for gallery.
+                </div>
+                <div 
+  id="image-list" 
+  style="display:flex;flex-wrap:wrap;gap:10px"
+></div>
+              </div>
+
+              <!-- Toggles -->
+              <div class="form-group">
+                <label class="form-label">Featured Product</label>
+                <div class="toggle-wrap">
+                  <div class="toggle-switch" id="toggle-featured"></div>
+                  <span class="toggle-label">Show in Featured section</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Trending Product</label>
+                <div class="toggle-wrap">
+                  <div class="toggle-switch" id="toggle-trending"></div>
+                  <span class="toggle-label">Show in Trending section</span>
+                </div>
+              </div>
+
+              <!-- Submit -->
+              <div class="admin-form-full" style="display:flex;gap:var(--space-md)">
+                <button type="submit" class="btn btn-primary btn-lg">💾 Save Product</button>
+                <button type="button" class="btn btn-secondary btn-lg" id="cancel-edit-2" onclick="AdminProducts.resetForm()">Reset Form</button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- Products Table -->
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div class="admin-card-title">All Products</div>
+            <div class="admin-toolbar">
+              <div class="admin-search-wrap">
+                <span class="admin-search-icon">🔍</span>
+                <input type="text" class="admin-search" id="products-search" placeholder="Search products…">
+              </div>
+            </div>
+          </div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Product</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Stock</th>
+                  <th>Rating</th>
+                  <th>Added</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="products-tbody">
+                <tr><td colspan="8" style="text-align:center;padding:var(--space-2xl);color:var(--text-muted)">
+                  No products yet. Add your first product above!
+                </td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/admin.js"></script>
+  <script src="admin-layout.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      injectAdminLayout('Products', 'products');
+      AdminProducts.init();
+    });
+  </script>
+</body>
+</html>

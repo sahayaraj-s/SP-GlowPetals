@@ -1,0 +1,119 @@
+/* =========================================
+   SP GlowPetals — CSS Variables & Themes
+   ========================================= */
+
+:root {
+  /* Brand Colors */
+  --primary: #c8884a;
+  --primary-light: #e4a96a;
+  --primary-dark: #a06030;
+  --accent: #8b1a4a;
+  --accent-light: #c4325e;
+  --gold: #d4a853;
+  --gold-light: #f0c878;
+
+  /* Backgrounds */
+  --bg-primary: #fdfaf6;
+  --bg-secondary: #f5ede2;
+  --bg-card: #ffffff;
+  --bg-overlay: rgba(253,250,246,0.92);
+
+  /* Text */
+  --text-primary: #1a0e08;
+  --text-secondary: #5c3d2a;
+  --text-muted: #9b7355;
+  --text-on-dark: #fdfaf6;
+
+  /* Borders */
+  --border: rgba(200,136,74,0.2);
+  --border-strong: rgba(200,136,74,0.4);
+
+  /* Shadows */
+  --shadow-sm: 0 2px 12px rgba(139,26,74,0.08);
+  --shadow-md: 0 8px 32px rgba(139,26,74,0.12);
+  --shadow-lg: 0 20px 60px rgba(139,26,74,0.18);
+  --shadow-xl: 0 32px 80px rgba(139,26,74,0.22);
+  --glow: 0 0 40px rgba(200,136,74,0.25);
+
+  /* Gradients */
+  --gradient-brand: linear-gradient(135deg, #c8884a 0%, #8b1a4a 100%);
+  --gradient-gold: linear-gradient(135deg, #d4a853 0%, #c8884a 100%);
+  --gradient-soft: linear-gradient(180deg, #fdfaf6 0%, #f5ede2 100%);
+  --gradient-hero: linear-gradient(135deg, rgba(139,26,74,0.85) 0%, rgba(200,136,74,0.75) 100%);
+  --gradient-card: linear-gradient(145deg, #ffffff 0%, #fdf5ec 100%);
+
+  /* Typography */
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Jost', 'Segoe UI', sans-serif;
+  --font-accent: 'Playfair Display', Georgia, serif;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --space-2xl: 64px;
+  --space-3xl: 96px;
+
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 32px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-mid: 0.3s ease;
+  --transition-slow: 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Navbar */
+  --navbar-height: 70px;
+
+  /* Z-index */
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-modal: 500;
+  --z-toast: 600;
+  --z-loading: 700;
+}
+
+/* ---- Dark Theme ---- */
+[data-theme="dark"] {
+  --bg-primary: #0f0a07;
+  --bg-secondary: #1a110a;
+  --bg-card: #1f1410;
+  --bg-overlay: rgba(15,10,7,0.92);
+  --text-primary: #fdfaf6;
+  --text-secondary: #d4aa88;
+  --text-muted: #8a6650;
+  --border: rgba(200,136,74,0.15);
+  --border-strong: rgba(200,136,74,0.3);
+  --shadow-sm: 0 2px 12px rgba(0,0,0,0.3);
+  --shadow-md: 0 8px 32px rgba(0,0,0,0.4);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.5);
+  --gradient-soft: linear-gradient(180deg, #0f0a07 0%, #1a110a 100%);
+  --gradient-card: linear-gradient(145deg, #1f1410 0%, #261710 100%);
+}
+
+/* ---- Premium Theme ---- */
+[data-theme="premium"] {
+  --primary: #d4a853;
+  --primary-light: #f0c878;
+  --primary-dark: #a07830;
+  --accent: #2c1a4a;
+  --bg-primary: #08050f;
+  --bg-secondary: #0f0a1a;
+  --bg-card: #140f20;
+  --text-primary: #f5e6c8;
+  --text-secondary: #c8a878;
+  --text-muted: #7a5f40;
+  --border: rgba(212,168,83,0.15);
+  --border-strong: rgba(212,168,83,0.3);
+  --gradient-brand: linear-gradient(135deg, #d4a853 0%, #2c1a4a 100%);
+  --gradient-soft: linear-gradient(180deg, #08050f 0%, #0f0a1a 100%);
+  --gradient-card: linear-gradient(145deg, #140f20 0%, #1a1428 100%);
+  --shadow-md: 0 8px 32px rgba(212,168,83,0.15);
+  --glow: 0 0 40px rgba(212,168,83,0.3);
+}

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us — SP GlowPetals</title>
+  <link rel="icon" type="image/png" href="../assets/images/ti.jpeg">
+  <link rel="stylesheet" href="../assets/css/variables.css">
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/navbar-footer.css">
+</head>
+<body>
+  <div id="navbar-placeholder"></div>
+  <main class="page-wrapper">
+    <div style="background:var(--bg-secondary);padding:var(--space-2xl) 0 var(--space-xl)">
+      <div class="container">
+        <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb-sep">›</span><span class="breadcrumb-current">Contact</span></div>
+        <h1 class="section-title" style="font-size:clamp(1.8rem,4vw,2.8rem)">Get in Touch 💌</h1>
+        <p style="color:var(--text-muted);margin-top:8px">We'd love to hear from you. Reach out for orders, customizations or just to say hi!</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="container">
+        <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:var(--space-3xl)" class="contact-grid">
+          <!-- Contact Info -->
+          <div class="reveal-left">
+            <h2 style="font-family:var(--font-display);margin-bottom:var(--space-xl)">Contact Information</h2>
+            <div style="display:flex;flex-direction:column;gap:var(--space-xl)">
+              <a href="https://wa.me/919384845814" target="_blank" style="display:flex;gap:var(--space-lg);padding:var(--space-lg);background:var(--bg-secondary);border-radius:var(--radius-xl);border:1px solid var(--border);transition:all .3s ease;text-decoration:none" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
+                <div style="width:52px;height:52px;border-radius:var(--radius-md);background:rgba(37,211,102,.15);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0">💬</div>
+                <div>
+                  <div style="font-weight:600;margin-bottom:4px;color:var(--text-primary)">WhatsApp Us</div>
+                  <div style="color:var(--primary);font-weight:500">+91 93848 45814</div>
+                  <div style="font-size:.78rem;color:var(--text-muted);margin-top:4px">Mon–Sat, 9AM–8PM</div>
+                </div>
+              </a>
+              <a href="mailto:spgpsupport@gmail.com" style="display:flex;gap:var(--space-lg);padding:var(--space-lg);background:var(--bg-secondary);border-radius:var(--radius-xl);border:1px solid var(--border);transition:all .3s ease;text-decoration:none" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
+                <div style="width:52px;height:52px;border-radius:var(--radius-md);background:rgba(200,136,74,.12);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0">📧</div>
+                <div>
+                  <div style="font-weight:600;margin-bottom:4px;color:var(--text-primary)">Email Us</div>
+                  <div style="color:var(--primary);font-weight:500">spgpsupport@gmail.com</div>
+                  <div style="font-size:.78rem;color:var(--text-muted);margin-top:4px">We reply within 24 hours</div>
+                </div>
+              </a>
+              <div style="display:flex;gap:var(--space-lg);padding:var(--space-lg);background:var(--bg-secondary);border-radius:var(--radius-xl);border:1px solid var(--border)">
+                <div style="width:52px;height:52px;border-radius:var(--radius-md);background:rgba(139,26,74,.12);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0">⏰</div>
+                <div>
+                  <div style="font-weight:600;margin-bottom:4px">Business Hours</div>
+                  <div style="font-size:.88rem;color:var(--text-muted)">Monday – Saturday<br>9:00 AM – 8:00 PM IST</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top:var(--space-xl)">
+              <h3 style="font-family:var(--font-display);margin-bottom:var(--space-md)">Order on WhatsApp Directly</h3>
+              <a href="https://wa.me/919384845814?text=Hello%20SP%20GlowPetals!%20I%20want%20to%20place%20an%20order." target="_blank" class="btn btn-whatsapp btn-lg" style="display:inline-flex">💬 Chat on WhatsApp</a>
+            </div>
+          </div>
+
+          <!-- Contact Form -->
+          <div class="reveal-right">
+            <div style="background:var(--gradient-card);border:1px solid var(--border);border-radius:var(--radius-xl);padding:var(--space-2xl)">
+              <h2 style="font-family:var(--font-display);margin-bottom:var(--space-xl)">Send a Message</h2>
+              <form id="contact-form">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md)">
+                  <div class="form-group">
+                    <label class="form-label">Your Name *</label>
+                    <input type="text" class="form-input" id="contact-name" placeholder="Priya Sharma">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Email Address *</label>
+                    <input type="email" class="form-input" id="contact-email" placeholder="priya@example.com">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Subject *</label>
+                  <select class="form-select" id="contact-subject">
+                    <option value="">Select a subject</option>
+                    <option>Custom Order Enquiry</option>
+                    <option>Order Tracking</option>
+                    <option>Product Information</option>
+                    <option>Return / Refund</option>
+                    <option>Corporate Gifting</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Your Message *</label>
+                  <textarea class="form-textarea" id="contact-message" placeholder="Tell us how we can help you…" rows="5"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center">Send Message 📨</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <div id="footer-placeholder"></div>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/pages.js"></script>
+  <style>@media(max-width:768px){.contact-grid{grid-template-columns:1fr!important}}</style>
+</body>
+</html>

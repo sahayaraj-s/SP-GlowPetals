@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search — SP GlowPetals</title>
+  <link rel="icon" type="image/png" href="../assets/images/ti.jpeg">
+  <link rel="stylesheet" href="../assets/css/variables.css">
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/navbar-footer.css">
+  <link rel="stylesheet" href="../assets/css/shop.css">
+</head>
+<body>
+  <div id="navbar-placeholder"></div>
+  <main class="page-wrapper">
+    <div style="background:var(--bg-secondary);padding:var(--space-2xl) 0 var(--space-xl)">
+      <div class="container">
+        <form id="search-form-main" style="display:flex;gap:var(--space-md);max-width:600px">
+          <input type="text" class="form-input" id="search-input-main" placeholder="Search for gifts, candles, flowers…" style="flex:1;font-size:1rem">
+          <button type="submit" class="btn btn-primary">🔍 Search</button>
+        </form>
+        <div style="margin-top:var(--space-md);font-size:.9rem;color:var(--text-muted)" id="search-results-count"></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="container">
+        <div class="products-grid" id="search-results-grid"></div>
+      </div>
+    </div>
+  </main>
+  <div id="footer-placeholder"></div>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/pages.js"></script>
+</body>
+</html>

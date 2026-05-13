@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Product details — SP GlowPetals">
+  <title>Product — SP GlowPetals</title>
+  <link rel="icon" type="image/png" href="../assets/images/ti.jpeg">
+  <link rel="stylesheet" href="../assets/css/variables.css">
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/navbar-footer.css">
+  <link rel="stylesheet" href="../assets/css/shop.css">
+</head>
+<body>
+  <div id="navbar-placeholder"></div>
+
+  <main class="page-wrapper">
+    <div class="container">
+      <!-- Breadcrumb -->
+      <div class="breadcrumb" id="breadcrumb">
+        <a href="../index.html">Home</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="shop.html">Shop</a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-current" id="product-name-bc">Product</span>
+      </div>
+    </div>
+
+    <div class="section" style="padding-top:var(--space-lg)">
+      <div class="container">
+        <div class="product-detail-layout">
+
+          <!-- Gallery -->
+          <div class="product-gallery">
+            <div class="gallery-main">
+              <img id="gallery-main-img" src="" alt="Product" class="gallery-main-img">
+              <div class="gallery-zoom-hint">🔍 Hover to zoom</div>
+            </div>
+            <div class="gallery-thumbs" id="gallery-thumbs"></div>
+          </div>
+
+          <!-- Info Panel -->
+          <div class="product-info-panel">
+            <div class="product-info-header">
+              <div class="product-info-category" id="product-category"></div>
+              <h1 class="product-info-name" id="product-name"></h1>
+              <div class="product-info-rating" id="product-rating-display"></div>
+              <span id="product-stock-indicator" style="font-size:.8rem;font-weight:600"></span>
+            </div>
+
+            <!-- Price -->
+            <div class="product-info-price" id="product-price-wrap"></div>
+
+            <!-- Description -->
+            <div class="product-info-desc">
+              <p id="product-description"></p>
+            </div>
+
+            <!-- Quantity -->
+            <div class="product-qty-row">
+              <span class="qty-label">Quantity</span>
+              <div class="qty-control">
+                <button class="qty-btn" id="qty-minus">−</button>
+                <span class="qty-value" id="qty-display">1</span>
+                <button class="qty-btn" id="qty-plus">+</button>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="product-action-row">
+              <button class="btn btn-primary btn-lg" id="product-add-cart">🛒 Add to Cart</button>
+              <button class="btn btn-whatsapp btn-lg" id="product-buy-whatsapp">💬 Buy on WhatsApp</button>
+              <button class="btn btn-secondary" id="product-wishlist">🤍 Wishlist</button>
+              <button class="btn btn-ghost" id="share-btn">📤 Share</button>
+            </div>
+
+            <!-- Tags -->
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:var(--space-lg)" id="product-tags"></div>
+
+            <!-- Meta -->
+            <div class="product-meta">
+              <div class="product-meta-item">
+                <span class="product-meta-label">SKU</span>
+                <span class="product-meta-value" id="product-sku"></span>
+              </div>
+              <div class="product-meta-item">
+                <span class="product-meta-label">Stock</span>
+                <span class="product-meta-value" id="product-stock-text"></span>
+              </div>
+              <div class="product-meta-item">
+                <span class="product-meta-label">Delivery</span>
+                <span class="product-meta-value">2–5 Business Days</span>
+              </div>
+              <div class="product-meta-item">
+                <span class="product-meta-label">Returns</span>
+                <span class="product-meta-value">7-Day Easy Returns</span>
+              </div>
+            </div>
+
+            <!-- Trust Badges -->
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-md);margin-top:var(--space-xl);padding:var(--space-lg);background:var(--bg-secondary);border-radius:var(--radius-lg);border:1px solid var(--border)">
+              <div style="text-align:center;font-size:.75rem;color:var(--text-muted)">
+                <div style="font-size:1.5rem">🔒</div>Secure Payment
+              </div>
+              <div style="text-align:center;font-size:.75rem;color:var(--text-muted)">
+                <div style="font-size:1.5rem">🚚</div>Fast Delivery
+              </div>
+              <div style="text-align:center;font-size:.75rem;color:var(--text-muted)">
+                <div style="font-size:1.5rem">↩️</div>Easy Returns
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product Tabs -->
+        <div class="product-tabs">
+          <div class="tabs-nav">
+            <button class="tab-btn active" data-tab="description">Description</button>
+            <button class="tab-btn" data-tab="details">Details</button>
+            <button class="tab-btn" data-tab="reviews">Reviews</button>
+            <button class="tab-btn" data-tab="shipping">Shipping</button>
+          </div>
+
+          <div class="tab-content active" id="tab-description">
+            <p id="product-description-tab" style="line-height:1.9;color:var(--text-secondary)"></p>
+          </div>
+
+          <div class="tab-content" id="tab-details">
+            <table style="width:100%;border-collapse:collapse">
+              <tr style="border-bottom:1px solid var(--border)">
+                <td style="padding:12px;font-weight:600;width:40%;color:var(--text-muted)">Material</td>
+                <td style="padding:12px">Premium Quality</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border)">
+                <td style="padding:12px;font-weight:600;color:var(--text-muted)">Weight</td>
+                <td style="padding:12px">As per product</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border)">
+                <td style="padding:12px;font-weight:600;color:var(--text-muted)">Packaging</td>
+                <td style="padding:12px">Premium Gift Box</td>
+              </tr>
+              <tr>
+                <td style="padding:12px;font-weight:600;color:var(--text-muted)">Customizable</td>
+                <td style="padding:12px">Yes (Contact us)</td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="tab-content" id="tab-reviews">
+            <div style="text-align:center;padding:var(--space-xl);color:var(--text-muted)">
+              <div style="font-size:3rem;margin-bottom:var(--space-md)">⭐</div>
+              <p>Be the first to review this product!</p>
+              <a href="https://wa.me/919384845814" class="btn btn-primary btn-sm" style="margin-top:var(--space-md)">Contact Us</a>
+            </div>
+          </div>
+
+          <div class="tab-content" id="tab-shipping">
+            <div style="display:flex;flex-direction:column;gap:var(--space-md)">
+              <div style="display:flex;gap:var(--space-md);padding:var(--space-md);background:var(--bg-secondary);border-radius:var(--radius-md)">
+                <span style="font-size:1.5rem">🚚</span>
+                <div><div style="font-weight:600;margin-bottom:4px">Standard Delivery</div><div style="font-size:.85rem;color:var(--text-muted)">2–5 business days · FREE above ₹499</div></div>
+              </div>
+              <div style="display:flex;gap:var(--space-md);padding:var(--space-md);background:var(--bg-secondary);border-radius:var(--radius-md)">
+                <span style="font-size:1.5rem">⚡</span>
+                <div><div style="font-weight:600;margin-bottom:4px">Express Delivery</div><div style="font-size:.85rem;color:var(--text-muted)">Same day / Next day (select cities)</div></div>
+              </div>
+              <div style="display:flex;gap:var(--space-md);padding:var(--space-md);background:var(--bg-secondary);border-radius:var(--radius-md)">
+                <span style="font-size:1.5rem">↩️</span>
+                <div><div style="font-weight:600;margin-bottom:4px">Easy Returns</div><div style="font-size:.85rem;color:var(--text-muted)">7-day return policy for eligible products</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Related Products -->
+        <div class="section" style="padding-bottom:0">
+          <div class="section-header">
+            <div class="section-tag">You May Also Like</div>
+            <h2 class="section-title">Related Products</h2>
+            <div class="divider"></div>
+          </div>
+          <div class="products-grid" id="related-products"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/pages.js"></script>
+  <script>
+    // Also update breadcrumb name with product name
+    document.addEventListener('DOMContentLoaded', () => {
+      const bc = document.getElementById('product-name-bc');
+      setTimeout(() => {
+        const nameEl = document.getElementById('product-name');
+        if (bc && nameEl) bc.textContent = nameEl.textContent;
+      }, 500);
+    });
+  </script>
+</body>
+</html>

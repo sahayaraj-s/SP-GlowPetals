@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — SP GlowPetals Admin</title>
+  <link rel="icon" type="image/png" href="../assets/images/ti.jpeg">
+  <link rel="stylesheet" href="../assets/css/variables.css">
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/admin.css">
+</head>
+<body class="admin-body">
+
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <div id="admin-sidebar-placeholder"></div>
+
+    <!-- Main -->
+    <div class="admin-main">
+      <div id="admin-topbar-placeholder"></div>
+
+      <div class="admin-content">
+
+        <!-- Welcome Banner -->
+        <div style="background:var(--gradient-brand);border-radius:var(--radius-xl);padding:var(--space-2xl);margin-bottom:var(--space-xl);position:relative;overflow:hidden">
+          <div style="position:absolute;top:-30%;right:-5%;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.07)"></div>
+          <div style="position:relative;z-index:1">
+            <h2 style="font-family:var(--font-display);color:#fff;font-size:1.6rem;margin-bottom:6px">Good to see you! 🌸</h2>
+            <p style="color:rgba(255,255,255,.75);font-size:.9rem">Here's what's happening with your store today.</p>
+            <div style="display:flex;gap:var(--space-md);margin-top:var(--space-lg);flex-wrap:wrap">
+              <a href="products.html" class="btn btn-ghost btn-sm">+ Add Product</a>
+              <a href="banners.html" class="btn btn-ghost btn-sm">+ Add Banner</a>
+              <a href="../index.html" target="_blank" class="btn btn-ghost btn-sm">🏪 View Store</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="admin-stats-grid">
+          <div class="admin-stat-card stat-card-1">
+            <div class="admin-stat-icon icon-bg-1">📦</div>
+            <div class="admin-stat-label">Total Products</div>
+            <div class="admin-stat-value" id="stat-products">0</div>
+            <div class="admin-stat-change stat-up">↑ Active listings</div>
+          </div>
+          <div class="admin-stat-card stat-card-2">
+            <div class="admin-stat-icon icon-bg-2">🛒</div>
+            <div class="admin-stat-label">Total Orders</div>
+            <div class="admin-stat-value" id="stat-orders">0</div>
+            <div class="admin-stat-change stat-up">↑ Via WhatsApp + Web</div>
+          </div>
+          <div class="admin-stat-card stat-card-3">
+            <div class="admin-stat-icon icon-bg-3">💰</div>
+            <div class="admin-stat-label">Revenue</div>
+            <div class="admin-stat-value" id="stat-revenue">₹0</div>
+            <div class="admin-stat-change stat-up">↑ Total order value</div>
+          </div>
+          <div class="admin-stat-card stat-card-4">
+            <div class="admin-stat-icon icon-bg-4">🗂️</div>
+            <div class="admin-stat-label">Categories</div>
+            <div class="admin-stat-value" id="stat-categories">0</div>
+            <div class="admin-stat-change">Active categories</div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="admin-card" style="margin-bottom:var(--space-xl)">
+          <div class="admin-card-header">
+            <div class="admin-card-title">⚡ Quick Actions</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:var(--space-md)">
+            <a href="products.html" class="card" style="padding:var(--space-lg);text-align:center;cursor:pointer;text-decoration:none">
+              <div style="font-size:2rem;margin-bottom:var(--space-sm)">📦</div>
+              <div style="font-weight:600;font-size:.88rem;color:var(--text-primary)">Add Product</div>
+            </a>
+            <a href="banners.html" class="card" style="padding:var(--space-lg);text-align:center;cursor:pointer;text-decoration:none">
+              <div style="font-size:2rem;margin-bottom:var(--space-sm)">🖼️</div>
+              <div style="font-weight:600;font-size:.88rem;color:var(--text-primary)">Add Banner</div>
+            </a>
+            <a href="categories.html" class="card" style="padding:var(--space-lg);text-align:center;cursor:pointer;text-decoration:none">
+              <div style="font-size:2rem;margin-bottom:var(--space-sm)">🗂️</div>
+              <div style="font-weight:600;font-size:.88rem;color:var(--text-primary)">Add Category</div>
+            </a>
+            <a href="orders.html" class="card" style="padding:var(--space-lg);text-align:center;cursor:pointer;text-decoration:none">
+              <div style="font-size:2rem;margin-bottom:var(--space-sm)">🛒</div>
+              <div style="font-weight:600;font-size:.88rem;color:var(--text-primary)">View Orders</div>
+            </a>
+            <a href="messages.html" class="card" style="padding:var(--space-lg);text-align:center;cursor:pointer;text-decoration:none">
+              <div style="font-size:2rem;margin-bottom:var(--space-sm)">💬</div>
+              <div style="font-weight:600;font-size:.88rem;color:var(--text-primary)">Messages</div>
+            </a>
+            <a href="../index.html" target="_blank" class="card" style="padding:var(--space-lg);text-align:center;cursor:pointer;text-decoration:none">
+              <div style="font-size:2rem;margin-bottom:var(--space-sm)">🏪</div>
+              <div style="font-weight:600;font-size:.88rem;color:var(--text-primary)">View Store</div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Recent Products -->
+        <div class="admin-card" style="margin-bottom:var(--space-xl)">
+          <div class="admin-card-header">
+            <div class="admin-card-title">📦 Recent Products</div>
+            <a href="products.html" class="btn btn-secondary btn-sm">Manage All →</a>
+          </div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Product</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Stock</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="recent-products-tbody">
+                <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted)">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div class="admin-card-title">🛒 Recent Orders</div>
+            <a href="orders.html" class="btn btn-secondary btn-sm">View All →</a>
+          </div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="recent-orders-tbody">
+                <tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted)">No orders yet</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/admin.js"></script>
+  <script src="admin-layout.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      injectAdminLayout('Dashboard', 'dashboard');
+      AdminDashboard.init();
+    });
+  </script>
+</body>
+</html>
