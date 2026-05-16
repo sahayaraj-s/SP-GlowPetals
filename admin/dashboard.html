@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard – SP GlowPetals Admin</title>
+  <link rel="icon" type="image/jpeg" href="../assets/images/ti.jpeg">
+  <link rel="stylesheet" href="../assets/css/admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+<script type="module">
+  import { requireAuth, renderAdminShell, adminToast } from './admin-shell.js';
+  import { getProducts, getOrders, getCategories, listenOrders } from '../assets/js/firebase.js';
+
+  const user = await requireAuth();
+  renderAdminShell('dashboard', 'Dashboard');
+
+  const content = document.getElementById('adminContent');
+  content.innerHTML = `<div style="text-align:center;padding:60px;color:var(--gray-600);">Loading dashboard…</div>`;
+
+  try {
+    const [products, orders, categories] = await Promise.all([getProducts({}), getOrders(), getCategories()]);
+    const totalRevenue = orders.filter(o => o.status !== 'cancelled').reduce((s, o) => s + (o.total || 0), 0);
+    const pendingOrders = orders.filter(o => o.status === 'pending').length;
+    const recentOrders = orders.slice(0, 8);
+
+    // Category distribution
+    const catMap = {};
+    products.forEach(p => { catMap[p.category] = (catMap[p.category] || 0) + 1; });
+    const topCats = Object.entries(catMap).sort((a,b) => b[1]-a[1]).slice(0, 5);
+
+    content.innerHTML = `
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon pink"><i class="fa fa-shopping-bag"></i></div>
+        <div><div class="stat-value">${orders.length}</div><div class="stat-label">Total Orders</div><div class="stat-change up">↑ ${pendingOrders} pending</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon gold"><i class="fa fa-rupee-sign"></i></div>
+        <div><div class="stat-value">₹${totalRevenue.toLocaleString('en-IN')}</div><div class="stat-label">Total Revenue</div><div class="stat-change up">↑ All time</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="fa fa-box"></i></div>
+        <div><div class="stat-value">${products.length}</div><div class="stat-label">Total Products</div><div class="stat-change up">↑ ${products.filter(p=>p.featured).length} featured</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon blue"><i class="fa fa-tags"></i></div>
+        <div><div class="stat-value">${categories.length}</div><div class="stat-label">Categories</div><div class="stat-change up">Active</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon purple"><i class="fa fa-clock"></i></div>
+        <div><div class="stat-value">${pendingOrders}</div><div class="stat-label">Pending Orders</div><div class="stat-change ${pendingOrders>0?'down':'up'}">${pendingOrders>0?'⚠ Needs attention':'All clear'}</div></div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:24px;">
+      <!-- Recent Orders -->
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <div class="admin-card-title">Recent Orders</div>
+          <a href="orders.html" class="btn btn-outline btn-sm">View All</a>
+        </div>
+        <div class="admin-card-body" style="padding:0;">
+          <div class="table-wrap">
+            <table class="admin-table">
+              <thead><tr><th>Order ID</th><th>Customer</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+              <tbody>
+                ${recentOrders.length ? recentOrders.map(o => `
+                <tr>
+                  <td style="font-weight:700;color:var(--pink);">#${o.id.slice(-6).toUpperCase()}</td>
+                  <td><div class="td-name">${o.customer?.name || 'Guest'}</div><div style="font-size:0.78rem;color:var(--gray-600);">${o.customer?.phone || ''}</div></td>
+                  <td class="td-price">₹${(o.total||0).toLocaleString('en-IN')}</td>
+                  <td><span class="status-badge status-${o.status||'pending'}">${o.status||'pending'}</span></td>
+                  <td style="font-size:0.82rem;color:var(--gray-600);">${o.createdAt?.toDate ? o.createdAt.toDate().toLocaleDateString('en-IN') : 'Now'}</td>
+                </tr>`).join('') : '<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--gray-600);">No orders yet</td></tr>'}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Stats -->
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <div class="admin-card-title">Products by Category</div>
+        </div>
+        <div class="admin-card-body">
+          ${topCats.length ? topCats.map(([cat, count]) => {
+            const pct = Math.round((count / products.length) * 100);
+            return `
+            <div style="margin-bottom:16px;">
+              <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:6px;">
+                <span style="font-weight:600;color:var(--text-dark);">${cat}</span>
+                <span style="color:var(--gray-600);">${count} products</span>
+              </div>
+              <div style="background:var(--gray-100);border-radius:6px;height:8px;overflow:hidden;">
+                <div style="width:${pct}%;height:100%;background:linear-gradient(90deg,var(--pink),var(--pink-dark));border-radius:6px;transition:width 0.6s ease;"></div>
+              </div>
+            </div>`;
+          }).join('') : '<p style="color:var(--gray-600);text-align:center;padding:20px;">No products yet</p>'}
+          <a href="products.html" class="btn btn-primary btn-sm" style="width:100%;justify-content:center;margin-top:12px;">Manage Products</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="admin-card" style="margin-top:0;">
+      <div class="admin-card-header"><div class="admin-card-title">Quick Actions</div></div>
+      <div class="admin-card-body">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;">
+          <a href="products.html" class="btn btn-primary" style="justify-content:center;flex-direction:column;gap:8px;padding:20px;border-radius:var(--radius-md);height:auto;">
+            <i class="fa fa-plus" style="font-size:1.4rem;"></i><span>Add Product</span>
+          </a>
+          <a href="orders.html" class="btn btn-outline" style="justify-content:center;flex-direction:column;gap:8px;padding:20px;border-radius:var(--radius-md);height:auto;">
+            <i class="fa fa-shopping-bag" style="font-size:1.4rem;"></i><span>View Orders</span>
+          </a>
+          <a href="banners.html" class="btn btn-outline" style="justify-content:center;flex-direction:column;gap:8px;padding:20px;border-radius:var(--radius-md);height:auto;">
+            <i class="fa fa-image" style="font-size:1.4rem;"></i><span>Manage Banners</span>
+          </a>
+          <a href="categories.html" class="btn btn-outline" style="justify-content:center;flex-direction:column;gap:8px;padding:20px;border-radius:var(--radius-md);height:auto;">
+            <i class="fa fa-tags" style="font-size:1.4rem;"></i><span>Categories</span>
+          </a>
+          <a href="customers.html" class="btn btn-outline" style="justify-content:center;flex-direction:column;gap:8px;padding:20px;border-radius:var(--radius-md);height:auto;">
+            <i class="fa fa-users" style="font-size:1.4rem;"></i><span>Customers</span>
+          </a>
+          <a href="../index.html" target="_blank" class="btn btn-secondary" style="justify-content:center;flex-direction:column;gap:8px;padding:20px;border-radius:var(--radius-md);height:auto;">
+            <i class="fa fa-store" style="font-size:1.4rem;"></i><span>View Store</span>
+          </a>
+        </div>
+      </div>
+    </div>`;
+
+    // Real-time order badge
+    listenOrders(orders => {
+      const pending = orders.filter(o => o.status === 'pending').length;
+      const badge = document.querySelector('[data-badge="orders"]');
+      if (badge) badge.textContent = pending;
+    });
+
+  } catch(e) {
+    console.error(e);
+    content.innerHTML = `<div style="text-align:center;padding:60px;color:var(--gray-600);">Failed to load dashboard: ${e.message}</div>`;
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Banners – SP GlowPetals Admin</title>
+  <link rel="icon" type="image/jpeg" href="../assets/images/ti.jpeg">
+  <link rel="stylesheet" href="../assets/css/admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+<script type="module">
+  import { requireAuth, renderAdminShell, adminToast, openModal, closeModal } from './admin-shell.js';
+  import { getBanners, addBanner, updateBanner, deleteBanner, uploadImage } from '../assets/js/firebase.js';
+
+  await requireAuth();
+  renderAdminShell('banners', 'Banner Management');
+
+  const content = document.getElementById('adminContent');
+  let allBanners = []; let editingId = null; let uploadedImageUrl = '';
+
+  async function init() {
+    content.innerHTML = `<div style="text-align:center;padding:60px;">Loading…</div>`;
+    allBanners = await getBanners();
+    renderPage();
+  }
+
+  function renderPage() {
+    content.innerHTML = `
+    <div class="modal-overlay" id="bannerModal">
+      <div class="modal" style="max-width:620px;">
+        <div class="modal-header">
+          <div class="modal-title" id="bannerModalTitle">Add Banner</div>
+          <button class="modal-close" onclick="closeModal('bannerModal')">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group"><label class="form-label">Banner Title <span style="color:var(--danger)">*</span></label><input class="form-control" id="bTitle" placeholder="e.g. Summer Sale — Up to 40% OFF"></div>
+          <div class="form-group"><label class="form-label">Subtitle</label><input class="form-control" id="bSubtitle" placeholder="Limited time offer…"></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Button Text</label><input class="form-control" id="bBtnText" placeholder="Shop Now" value="Shop Now"></div>
+            <div class="form-group"><label class="form-label">Button Link</label><input class="form-control" id="bBtnLink" placeholder="/shop.html" value="/shop.html"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Sort Order</label><input class="form-control" id="bSort" type="number" placeholder="1" min="0"></div>
+            <div class="form-group"><label class="form-label">Background Color</label><input class="form-control" id="bBgColor" type="color" value="#1a1a2e"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Banner Image</label>
+            <div class="upload-area" id="bannerUploadArea" onclick="document.getElementById('bannerImgInput').click()">
+              <div class="upload-icon">🖼️</div>
+              <div class="upload-text"><strong>Click to upload</strong> banner image (recommended: 1920×700)</div>
+            </div>
+            <input type="file" id="bannerImgInput" accept="image/*" style="display:none" onchange="handleBannerImg(this)">
+            <div id="bannerImgPreview" style="margin-top:10px;"></div>
+            <div class="form-hint" id="bannerUploadStatus"></div>
+          </div>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-top:8px;">
+            <label class="toggle"><input type="checkbox" id="bActive" checked><span class="toggle-slider"></span></label>
+            <span style="font-size:0.88rem;font-weight:600;">Active (show on homepage)</span>
+          </label>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal('bannerModal')">Cancel</button>
+          <button class="btn btn-primary" onclick="saveBanner()"><i class="fa fa-save"></i> Save Banner</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <div class="admin-card-title">Hero Banners (${allBanners.length})</div>
+        <button class="btn btn-primary btn-sm" onclick="openAddBanner()"><i class="fa fa-plus"></i> Add Banner</button>
+      </div>
+      <div class="admin-card-body">
+        ${allBanners.length ? `
+        <div style="display:grid;gap:16px;">
+          ${allBanners.map(b => `
+          <div style="border:1px solid var(--gray-200);border-radius:var(--radius-md);overflow:hidden;display:grid;grid-template-columns:200px 1fr auto;gap:0;align-items:center;">
+            <div style="background:${b.bgColor||'#1a1a2e'};height:100px;display:flex;align-items:center;justify-content:center;padding:16px;">
+              ${b.image ? `<img src="${b.image}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">` : `<span style="font-size:2rem;">🖼️</span>`}
+            </div>
+            <div style="padding:16px;">
+              <div style="font-weight:700;color:var(--text-dark);font-size:1rem;margin-bottom:4px;">${b.title||'Untitled'}</div>
+              <div style="font-size:0.85rem;color:var(--gray-600);margin-bottom:8px;">${b.subtitle||''}</div>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <span class="status-badge ${b.active!==false?'status-active':'status-inactive'}">${b.active!==false?'Active':'Inactive'}</span>
+                <span style="font-size:0.78rem;color:var(--gray-600);">Order: ${b.sort||0}</span>
+                ${b.btnText ? `<span style="font-size:0.78rem;background:var(--pink-pale);color:var(--pink);padding:2px 8px;border-radius:10px;">${b.btnText}</span>` : ''}
+              </div>
+            </div>
+            <div style="padding:16px;">
+              <div class="action-btns">
+                <button class="action-btn action-btn-edit" onclick="openEditBanner('${b.id}')"><i class="fa fa-edit"></i></button>
+                <button class="action-btn action-btn-delete" onclick="deleteBannerItem('${b.id}','${(b.image||'').replace(/'/g,"\\'")}')"><i class="fa fa-trash"></i></button>
+              </div>
+            </div>
+          </div>`).join('')}
+        </div>` : `
+        <div style="text-align:center;padding:60px;color:var(--gray-600);">
+          <div style="font-size:3rem;margin-bottom:16px;">🖼️</div>
+          <h3 style="margin-bottom:8px;">No banners yet</h3>
+          <p>Add hero banners to display on your homepage slider.</p>
+          <button class="btn btn-primary" style="margin-top:16px;" onclick="openAddBanner()"><i class="fa fa-plus"></i> Add First Banner</button>
+        </div>`}
+      </div>
+    </div>`;
+  }
+
+  window.openAddBanner = () => {
+    editingId = null; uploadedImageUrl = '';
+    document.getElementById('bannerModalTitle').textContent = 'Add Banner';
+    ['bTitle','bSubtitle','bSort'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+    document.getElementById('bBtnText').value = 'Shop Now';
+    document.getElementById('bBtnLink').value = '/shop.html';
+    document.getElementById('bBgColor').value = '#1a1a2e';
+    document.getElementById('bActive').checked = true;
+    document.getElementById('bannerImgPreview').innerHTML = '';
+    document.getElementById('bannerUploadStatus').textContent = '';
+    openModal('bannerModal');
+  };
+
+  window.openEditBanner = (id) => {
+    const b = allBanners.find(x => x.id === id);
+    if (!b) return;
+    editingId = id; uploadedImageUrl = b.image || '';
+    document.getElementById('bannerModalTitle').textContent = 'Edit Banner';
+    document.getElementById('bTitle').value = b.title || '';
+    document.getElementById('bSubtitle').value = b.subtitle || '';
+    document.getElementById('bBtnText').value = b.btnText || 'Shop Now';
+    document.getElementById('bBtnLink').value = b.btnLink || '/shop.html';
+    document.getElementById('bSort').value = b.sort || '';
+    document.getElementById('bBgColor').value = b.bgColor || '#1a1a2e';
+    document.getElementById('bActive').checked = b.active !== false;
+    document.getElementById('bannerImgPreview').innerHTML = uploadedImageUrl ? `<img src="${uploadedImageUrl}" style="width:100%;height:100px;object-fit:cover;border-radius:8px;margin-top:8px;">` : '';
+    openModal('bannerModal');
+  };
+
+  window.handleBannerImg = async (input) => {
+    const file = input.files?.[0];
+    if (!file) return;
+    document.getElementById('bannerUploadStatus').textContent = '⏳ Uploading…';
+    try {
+      uploadedImageUrl = await uploadImage(file, 'banners');
+      document.getElementById('bannerImgPreview').innerHTML = `<img src="${uploadedImageUrl}" style="width:100%;height:100px;object-fit:cover;border-radius:8px;margin-top:8px;">`;
+      document.getElementById('bannerUploadStatus').textContent = '✅ Uploaded!';
+    } catch(e) { document.getElementById('bannerUploadStatus').textContent = `❌ ${e.message}`; }
+  };
+
+  window.saveBanner = async () => {
+    const title = document.getElementById('bTitle').value.trim();
+    if (!title) { adminToast('Banner title required', 'error'); return; }
+    const data = { title, subtitle: document.getElementById('bSubtitle').value.trim(), btnText: document.getElementById('bBtnText').value.trim(), btnLink: document.getElementById('bBtnLink').value.trim(), sort: parseInt(document.getElementById('bSort').value)||0, bgColor: document.getElementById('bBgColor').value, image: uploadedImageUrl, active: document.getElementById('bActive').checked };
+    try {
+      if (editingId) { await updateBanner(editingId, data); adminToast('Banner updated!'); }
+      else { await addBanner(data); adminToast('Banner added!'); }
+      closeModal('bannerModal');
+      allBanners = await getBanners();
+      renderPage();
+    } catch(e) { adminToast(`Error: ${e.message}`, 'error'); }
+  };
+
+  window.deleteBannerItem = async (id, imgUrl) => {
+    if (!window.confirm('Delete this banner?')) return;
+    try {
+      await deleteBanner(id);
+      
+      adminToast('Banner deleted');
+      allBanners = await getBanners();
+      renderPage();
+    } catch(e) { adminToast(`Error: ${e.message}`, 'error'); }
+  };
+
+  window.closeModal = (id) => document.getElementById(id)?.classList.remove('open');
+
+  await init();
+</script>
+</body>
+</html>

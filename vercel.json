@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "routes": [
+    {
+      "src": "/(.*)",
+      "headers": {
+        "Cache-Control": "public, max-age=3600"
+      }
+    }
+  ],
+  "rewrites": [
+    { "source": "/admin", "destination": "/admin/login.html" },
+    { "source": "/shop", "destination": "/shop.html" },
+    { "source": "/cart", "destination": "/pages/cart.html" },
+    { "source": "/checkout", "destination": "/pages/checkout.html" },
+    { "source": "/wishlist", "destination": "/pages/wishlist.html" }
+  ]
+}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search – SP GlowPetals</title>
+  <link rel="icon" type="image/jpeg" href="../assets/images/ti.jpeg">
+  <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+  <div class="loader-overlay" id="loader"><div class="loader-ring"></div><div class="loader-text">GlowPetals ✦</div></div>
+  <div id="navbar"></div>
+  <div style="background:var(--pink-pale);padding:40px 0;border-bottom:1px solid var(--pink-light);">
+    <div class="container">
+      <h1 style="font-size:1.8rem;" id="searchHeading">Search Results</h1>
+      <div style="margin-top:16px;display:flex;max-width:560px;border-radius:50px;overflow:hidden;box-shadow:var(--shadow-md);">
+        <input id="searchBar" type="text" placeholder="Search gifts…" style="flex:1;padding:14px 22px;border:none;outline:none;font-size:1rem;">
+        <button onclick="doSearch()" style="padding:0 24px;background:var(--pink);color:white;border:none;cursor:pointer;font-size:1.1rem;">🔍</button>
+      </div>
+    </div>
+  </div>
+  <section class="section">
+    <div class="container">
+      <div id="searchResults" class="products-grid">
+        <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-600);">Searching…</div>
+      </div>
+    </div>
+  </section>
+  <div id="footer"></div>
+  <script type="module">
+    import { renderNavbar, renderFooter, productCardHTML, bindProductCardEvents, showLoader, hideLoader } from '../assets/js/components.js';
+    import { getProducts } from '../assets/js/firebase.js';
+    renderNavbar('');renderFooter();
+    const q = new URLSearchParams(location.search).get('q') || '';
+    const bar = document.getElementById('searchBar');
+    bar.value = q;
+    document.getElementById('searchHeading').textContent = q ? `Search results for "${q}"` : 'Search';
+    async function doSearch() {
+      const query = bar.value.trim().toLowerCase();
+      if (!query) return;
+      history.pushState({}, '', `?q=${encodeURIComponent(query)}`);
+      document.getElementById('searchHeading').textContent = `Results for "${query}"`;
+      const el = document.getElementById('searchResults');
+      el.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;">Searching…</div>';
+      showLoader();
+      try {
+        const all = await getProducts({});
+        const results = all.filter(p => p.name?.toLowerCase().includes(query) || p.category?.toLowerCase().includes(query) || p.description?.toLowerCase().includes(query));
+        if (!results.length) { el.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🔍</div><h3>No results for "${query}"</h3><p>Try different keywords or browse our categories.</p><a href="../pages/shop.html" class="btn btn-primary">Browse All Gifts</a></div>`; }
+        else { el.innerHTML = results.map(p => productCardHTML(p)).join(''); bindProductCardEvents(el, results); }
+      } catch(e) { el.innerHTML = '<div style="grid-column:1/-1;text-align:center;">Search failed. Please try again.</div>'; }
+      finally { hideLoader(); }
+    }
+    window.doSearch = doSearch;
+    bar.addEventListener('keydown', e => e.key === 'Enter' && doSearch());
+    if (q) doSearch(); else hideLoader();
+  </script>
+</body>
+</html>

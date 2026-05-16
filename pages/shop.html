@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop – SP GlowPetals</title>
+  <link rel="icon" type="image/jpeg" href="../assets/images/ti.jpeg">
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <style>
+    .shop-layout { display:grid; grid-template-columns:260px 1fr; gap:28px; align-items:start; }
+    .filter-sidebar { background:white; border-radius:var(--radius-lg); border:1px solid var(--gray-200); padding:24px; position:sticky; top:90px; }
+    .filter-title { font-family:var(--font-display); font-size:1.1rem; font-weight:600; color:var(--text-dark); margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; }
+    .filter-section { margin-bottom:24px; border-bottom:1px solid var(--gray-100); padding-bottom:20px; }
+    .filter-section:last-child { border-bottom:none; margin-bottom:0; padding-bottom:0; }
+    .filter-label { font-size:0.82rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--gray-600); margin-bottom:12px; }
+    .filter-option { display:flex; align-items:center; gap:10px; padding:8px 0; cursor:pointer; font-size:0.9rem; color:var(--text-body); transition:var(--transition); }
+    .filter-option:hover { color:var(--pink); }
+    .filter-option input[type=checkbox] { accent-color:var(--pink); width:16px; height:16px; cursor:pointer; }
+    .price-range { margin-top:12px; }
+    .price-range input[type=range] { width:100%; accent-color:var(--pink); }
+    .price-display { display:flex; justify-content:space-between; font-size:0.85rem; color:var(--gray-600); margin-top:8px; }
+    .shop-toolbar { display:flex; align-items:center; gap:12px; margin-bottom:24px; flex-wrap:wrap; }
+    .sort-select { padding:9px 14px; border:1.5px solid var(--gray-200); border-radius:var(--radius-sm); font-size:0.88rem; cursor:pointer; outline:none; background:white; }
+    .sort-select:focus { border-color:var(--pink); }
+    .view-toggle { display:flex; gap:4px; }
+    .view-btn { width:36px; height:36px; border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; cursor:pointer; border:1.5px solid var(--gray-200); background:white; color:var(--gray-600); font-size:1rem; transition:var(--transition); }
+    .view-btn.active { border-color:var(--pink); background:var(--pink-pale); color:var(--pink); }
+    .results-count { font-size:0.88rem; color:var(--gray-600); flex:1; }
+    .active-filters { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+    .filter-tag { display:inline-flex; align-items:center; gap:6px; background:var(--pink-pale); color:var(--pink); border-radius:30px; padding:5px 12px; font-size:0.8rem; font-weight:600; }
+    .filter-tag button { background:none; border:none; cursor:pointer; color:var(--pink); font-size:0.9rem; padding:0; line-height:1; }
+    .pagination { display:flex; align-items:center; justify-content:center; gap:8px; margin-top:40px; }
+    .page-btn { width:38px; height:38px; border-radius:var(--radius-sm); border:1.5px solid var(--gray-200); background:white; cursor:pointer; font-size:0.9rem; font-weight:600; transition:var(--transition); display:flex; align-items:center; justify-content:center; color:var(--text-dark); }
+    .page-btn:hover { border-color:var(--pink); color:var(--pink); }
+    .page-btn.active { background:var(--pink); border-color:var(--pink); color:white; }
+    .list-view { display:flex; flex-direction:column; gap:16px; }
+    .list-view .product-card { display:grid; grid-template-columns:200px 1fr; }
+    .list-view .product-img-wrap { aspect-ratio:unset; height:180px; }
+    .no-products { text-align:center; padding:80px 20px; }
+    @media(max-width:900px){.shop-layout{grid-template-columns:1fr;}}
+    @media(max-width:768px){
+      .filter-sidebar{position:fixed;inset:0;z-index:500;border-radius:0;transform:translateX(-100%);overflow-y:auto;transition:transform var(--transition);max-width:300px;}
+      .filter-sidebar.open{transform:translateX(0);}
+      .filter-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:499;display:none;}
+      .filter-backdrop.open{display:block;}
+      .list-view .product-card{grid-template-columns:1fr;}
+      .list-view .product-img-wrap{height:200px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="loader-overlay" id="loader"><div class="loader-ring"></div><div class="loader-text">GlowPetals ✦</div></div>
+  <div id="navbar"></div>
+  <div class="filter-backdrop" id="filterBackdrop"></div>
+
+  <div style="background:var(--pink-pale);padding:40px 0;border-bottom:1px solid var(--pink-light);">
+    <div class="container">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span>/</span><span class="current">Shop</span></div>
+      <h1 id="shopTitle" style="font-size:2rem;">All Gifts & Collections</h1>
+      <p style="color:var(--gray-600);margin-top:6px;">Discover our curated selection of premium gifts for every occasion</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="shop-layout">
+        <!-- Filters Sidebar -->
+        <aside class="filter-sidebar" id="filterSidebar">
+          <div class="filter-title">
+            Filters
+            <button onclick="clearAllFilters()" style="font-size:0.78rem;color:var(--pink);cursor:pointer;border:none;background:none;font-weight:600;">Clear All</button>
+          </div>
+          <div class="filter-section">
+            <div class="filter-label">Categories</div>
+            <div id="catFilters">
+              <label class="filter-option"><input type="checkbox" value="candles" onchange="applyFilters()">🕯️ Gift Candles</label>
+              <label class="filter-option"><input type="checkbox" value="flowers" onchange="applyFilters()">🌹 Flowers</label>
+              <label class="filter-option"><input type="checkbox" value="surprise-boxes" onchange="applyFilters()">🎁 Surprise Boxes</label>
+              <label class="filter-option"><input type="checkbox" value="romantic" onchange="applyFilters()">💕 Romantic Gifts</label>
+              <label class="filter-option"><input type="checkbox" value="personalized" onchange="applyFilters()">✨ Personalized</label>
+              <label class="filter-option"><input type="checkbox" value="teddy" onchange="applyFilters()">🧸 Teddy Bears</label>
+              <label class="filter-option"><input type="checkbox" value="chocolates" onchange="applyFilters()">🍫 Chocolates</label>
+              <label class="filter-option"><input type="checkbox" value="hampers" onchange="applyFilters()">🎀 Hampers</label>
+              <label class="filter-option"><input type="checkbox" value="premium" onchange="applyFilters()">👑 Premium Gifts</label>
+            </div>
+          </div>
+          <div class="filter-section">
+            <div class="filter-label">Price Range</div>
+            <div class="price-range">
+              <input type="range" id="priceRange" min="0" max="5000" value="5000" step="100" oninput="updatePriceDisplay(this.value);applyFilters();">
+              <div class="price-display"><span>₹0</span><span id="priceMax">₹5000</span></div>
+            </div>
+          </div>
+          <div class="filter-section">
+            <div class="filter-label">Product Type</div>
+            <label class="filter-option"><input type="checkbox" id="filterFeatured" onchange="applyFilters()">Featured</label>
+            <label class="filter-option"><input type="checkbox" id="filterTrending" onchange="applyFilters()">Trending</label>
+            <label class="filter-option"><input type="checkbox" id="filterSale" onchange="applyFilters()">On Sale</label>
+          </div>
+          <div class="filter-section">
+            <div class="filter-label">Rating</div>
+            <label class="filter-option"><input type="checkbox" value="5" onchange="applyFilters()">★★★★★ 5 Stars</label>
+            <label class="filter-option"><input type="checkbox" value="4" onchange="applyFilters()">★★★★☆ 4+ Stars</label>
+            <label class="filter-option"><input type="checkbox" value="3" onchange="applyFilters()">★★★☆☆ 3+ Stars</label>
+          </div>
+        </aside>
+
+        <!-- Products Area -->
+        <div>
+          <div class="shop-toolbar">
+            <button class="btn btn-outline btn-sm" id="mobileFilterBtn" style="display:none;" onclick="openMobileFilter()">🔧 Filters</button>
+            <div class="results-count" id="resultsCount">Showing all products</div>
+            <select class="sort-select" id="sortSelect" onchange="applyFilters()">
+              <option value="">Sort: Default</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="rating">Top Rated</option>
+              <option value="newest">Newest First</option>
+              <option value="name">A–Z</option>
+            </select>
+            <div class="view-toggle">
+              <button class="view-btn active" id="gridViewBtn" title="Grid View" onclick="setView('grid')">▦</button>
+              <button class="view-btn" id="listViewBtn" title="List View" onclick="setView('list')">☰</button>
+            </div>
+          </div>
+          <div class="active-filters" id="activeFilters"></div>
+          <div id="productsContainer" class="products-grid">
+            <div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--gray-600);">Loading products…</div>
+          </div>
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer"></div>
+  <a href="https://wa.me/919384845814" target="_blank" class="whatsapp-float"><div class="whatsapp-pulse"></div><span>💬</span></a>
+
+  <script type="module">
+    import { renderNavbar, renderFooter, productCardHTML, bindProductCardEvents, showLoader, hideLoader, renderSearch } from '../assets/js/components.js';
+    import { getProducts } from '../assets/js/firebase.js';
+
+    renderNavbar('shop'); renderFooter();
+
+    let allProducts = []; let filtered = []; let currentPage = 1; const perPage = 12;
+    let currentView = 'grid';
+
+    // Check URL params
+    const urlParams = new URLSearchParams(location.search);
+    const catParam = urlParams.get('cat');
+    if (catParam) {
+      document.getElementById('shopTitle').textContent = catParam.replace(/-/g,' ').replace(/\b\w/g,l=>l.toUpperCase()) + ' Collection';
+      const cb = document.querySelector(`input[value="${catParam}"]`);
+      if (cb) { cb.checked = true; }
+    }
+
+    // Mobile filter
+    window.openMobileFilter = () => { document.getElementById('filterSidebar').classList.add('open'); document.getElementById('filterBackdrop').classList.add('open'); };
+    document.getElementById('filterBackdrop')?.addEventListener('click', () => { document.getElementById('filterSidebar').classList.remove('open'); document.getElementById('filterBackdrop').classList.remove('open'); });
+    if (window.innerWidth <= 768) document.getElementById('mobileFilterBtn').style.display = '';
+
+    // Load products
+    async function init() {
+      showLoader();
+      try {
+        allProducts = await getProducts({});
+        renderSearch(allProducts);
+        applyFilters();
+      } catch(e) { console.error(e); document.getElementById('productsContainer').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;">Failed to load products. <a href="#" onclick="location.reload()">Retry</a></div>`; }
+      finally { hideLoader(); }
+    }
+
+    window.applyFilters = () => {
+      const cats = [...document.querySelectorAll('#catFilters input:checked')].map(i => i.value);
+      const maxPrice = +document.getElementById('priceRange').value;
+      const onlyFeatured = document.getElementById('filterFeatured').checked;
+      const onlyTrending = document.getElementById('filterTrending').checked;
+      const onlySale = document.getElementById('filterSale').checked;
+      const sort = document.getElementById('sortSelect').value;
+
+      filtered = allProducts.filter(p => {
+        if (cats.length && !cats.includes(p.category)) return false;
+        if (p.price > maxPrice) return false;
+        if (onlyFeatured && !p.featured) return false;
+        if (onlyTrending && !p.trending) return false;
+        if (onlySale && !p.originalPrice) return false;
+        return true;
+      });
+
+      if (sort === 'price-asc') filtered.sort((a,b) => a.price - b.price);
+      else if (sort === 'price-desc') filtered.sort((a,b) => b.price - a.price);
+      else if (sort === 'rating') filtered.sort((a,b) => (b.rating||0) - (a.rating||0));
+      else if (sort === 'name') filtered.sort((a,b) => a.name?.localeCompare(b.name));
+
+      currentPage = 1;
+      renderActiveFilters(cats, maxPrice, onlyFeatured, onlyTrending, onlySale);
+      renderPage();
+    };
+
+    function renderActiveFilters(cats, maxPrice, feat, trend, sale) {
+      const el = document.getElementById('activeFilters');
+      let html = '';
+      cats.forEach(c => { html += `<span class="filter-tag">${c} <button onclick="removeCatFilter('${c}')">✕</button></span>`; });
+      if (maxPrice < 5000) html += `<span class="filter-tag">Under ₹${maxPrice} <button onclick="resetPrice()">✕</button></span>`;
+      if (feat) html += `<span class="filter-tag">Featured <button onclick="resetFeat()">✕</button></span>`;
+      if (trend) html += `<span class="filter-tag">Trending <button onclick="resetTrend()">✕</button></span>`;
+      if (sale) html += `<span class="filter-tag">On Sale <button onclick="resetSale()">✕</button></span>`;
+      el.innerHTML = html;
+    }
+
+    window.removeCatFilter = (cat) => { const cb = document.querySelector(`input[value="${cat}"]`); if (cb) cb.checked = false; applyFilters(); };
+    window.resetPrice = () => { document.getElementById('priceRange').value = 5000; updatePriceDisplay(5000); applyFilters(); };
+    window.resetFeat = () => { document.getElementById('filterFeatured').checked = false; applyFilters(); };
+    window.resetTrend = () => { document.getElementById('filterTrending').checked = false; applyFilters(); };
+    window.resetSale = () => { document.getElementById('filterSale').checked = false; applyFilters(); };
+    window.clearAllFilters = () => {
+      document.querySelectorAll('#catFilters input, #filterFeatured, #filterTrending, #filterSale').forEach(i => i.checked = false);
+      document.getElementById('priceRange').value = 5000; updatePriceDisplay(5000);
+      applyFilters();
+    };
+
+    function renderPage() {
+      const start = (currentPage - 1) * perPage;
+      const page = filtered.slice(start, start + perPage);
+      const el = document.getElementById('productsContainer');
+      document.getElementById('resultsCount').textContent = `Showing ${filtered.length} product${filtered.length !== 1 ? 's' : ''}`;
+      if (!filtered.length) { el.className = ''; el.innerHTML = `<div class="no-products"><div style="font-size:4rem">🔍</div><h3>No products found</h3><p>Try adjusting your filters.</p><button class="btn btn-primary" onclick="clearAllFilters()">Clear Filters</button></div>`; document.getElementById('pagination').innerHTML = ''; return; }
+      el.className = currentView === 'grid' ? 'products-grid' : 'list-view';
+      el.innerHTML = page.map(p => productCardHTML(p)).join('');
+      bindProductCardEvents(el, page);
+      renderPagination();
+    }
+
+    function renderPagination() {
+      const total = Math.ceil(filtered.length / perPage);
+      const el = document.getElementById('pagination');
+      if (total <= 1) { el.innerHTML = ''; return; }
+      let html = `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+      for (let i = 1; i <= total; i++) { html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`; }
+      html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===total?'disabled':''}>›</button>`;
+      el.innerHTML = html;
+    }
+
+    window.goPage = (n) => { const total = Math.ceil(filtered.length / perPage); if (n < 1 || n > total) return; currentPage = n; renderPage(); window.scrollTo({top:0,behavior:'smooth'}); };
+    window.setView = (v) => { currentView = v; document.getElementById('gridViewBtn').classList.toggle('active', v==='grid'); document.getElementById('listViewBtn').classList.toggle('active', v==='list'); renderPage(); };
+    window.updatePriceDisplay = (v) => document.getElementById('priceMax').textContent = `₹${Number(v).toLocaleString('en-IN')}`;
+
+    init();
+
+    // Pre-check from URL
+    if (catParam) { setTimeout(applyFilters, 200); }
+  </script>
+</body>
+</html>

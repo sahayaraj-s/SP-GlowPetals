@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products – SP GlowPetals Admin</title>
+  <link rel="icon" type="image/jpeg" href="../assets/images/ti.jpeg">
+  <link rel="stylesheet" href="../assets/css/admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+<script type="module">
+  import { requireAuth, renderAdminShell, adminToast, openModal, closeModal, confirmDelete } from './admin-shell.js';
+  import { getProducts, addProduct, updateProduct, deleteProduct, uploadImage, getCategories } from '../assets/js/firebase.js';
+
+  await requireAuth();
+  renderAdminShell('products', 'Product Management');
+
+  const content = document.getElementById('adminContent');
+  let allProducts = []; let categories = []; let editingId = null; let uploadedImageUrl = '';
+
+  async function init() {
+    content.innerHTML = `<div style="text-align:center;padding:60px;">Loading products…</div>`;
+    [allProducts, categories] = await Promise.all([getProducts({}), getCategories()]);
+    renderPage();
+  }
+
+  function renderPage(filter = '') {
+    const filtered = filter ? allProducts.filter(p =>
+      p.name?.toLowerCase().includes(filter) ||
+      p.category?.toLowerCase().includes(filter)
+    ) : allProducts;
+
+    content.innerHTML = `
+    <!-- Modal -->
+    <div class="modal-overlay" id="productModal">
+      <div class="modal" style="max-width:700px;">
+        <div class="modal-header">
+          <div class="modal-title" id="modalTitle">Add Product</div>
+          <button class="modal-close" onclick="closeProductModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Product Name <span>*</span></label><input class="form-control" id="pName" placeholder="e.g. Rose Scented Candle" required></div>
+            <div class="form-group">
+              <label class="form-label">Category <span>*</span></label>
+              <select class="form-select" id="pCategory" required>
+                <option value="">Select category…</option>
+                <option value="candles">Gift Candles</option>
+                <option value="flowers">Flowers</option>
+                <option value="surprise-boxes">Surprise Boxes</option>
+                <option value="romantic">Romantic Gifts</option>
+                <option value="personalized">Personalized Gifts</option>
+                <option value="teddy">Teddy Bears</option>
+                <option value="chocolates">Chocolates</option>
+                <option value="hampers">Hampers</option>
+                <option value="premium">Premium Gifts</option>
+                ${categories.map(c => `<option value="${c.slug||c.name}">${c.name}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Price (₹) <span>*</span></label><input class="form-control" id="pPrice" type="number" placeholder="999" required min="1"></div>
+            <div class="form-group"><label class="form-label">Original Price (₹)</label><input class="form-control" id="pOriginalPrice" type="number" placeholder="1499"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Stock Quantity</label><input class="form-control" id="pStock" type="number" placeholder="50" min="0"></div>
+            <div class="form-group"><label class="form-label">Rating (1–5)</label><input class="form-control" id="pRating" type="number" step="0.1" min="1" max="5" placeholder="4.5"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Description</label><textarea class="form-control" id="pDesc" rows="3" placeholder="Describe this beautiful product…"></textarea></div>
+          <div class="form-group"><label class="form-label">Features (one per line)</label><textarea class="form-control" id="pFeatures" rows="3" placeholder="Handcrafted with natural wax&#10;Long burn time (40+ hours)&#10;Premium gift packaging"></textarea></div>
+          <div class="form-group">
+            <label class="form-label">Product Image</label>
+            <div class="upload-area" id="uploadArea" onclick="document.getElementById('imgInput').click()">
+              <div class="upload-icon">🖼️</div>
+              <div class="upload-text"><strong>Click to upload</strong> or drag & drop</div>
+              <div style="font-size:0.78rem;color:var(--gray-400);margin-top:6px;">PNG, JPG up to 5MB</div>
+            </div>
+            <input type="file" id="imgInput" accept="image/*" style="display:none" onchange="handleImgUpload(this)">
+            <div id="imgPreviewWrap" class="upload-preview"></div>
+            <div class="form-hint" id="uploadStatus"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:8px;">
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px;border:1px solid var(--gray-200);border-radius:var(--radius-sm);">
+              <label class="toggle"><input type="checkbox" id="pFeatured"><span class="toggle-slider"></span></label>
+              <span style="font-size:0.88rem;font-weight:600;">Featured</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px;border:1px solid var(--gray-200);border-radius:var(--radius-sm);">
+              <label class="toggle"><input type="checkbox" id="pTrending"><span class="toggle-slider"></span></label>
+              <span style="font-size:0.88rem;font-weight:600;">Trending</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px;border:1px solid var(--gray-200);border-radius:var(--radius-sm);">
+              <label class="toggle"><input type="checkbox" id="pNew"><span class="toggle-slider"></span></label>
+              <span style="font-size:0.88rem;font-weight:600;">New Arrival</span>
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeProductModal()">Cancel</button>
+          <button class="btn btn-primary" id="saveProductBtn" onclick="saveProduct()"><i class="fa fa-save"></i> Save Product</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <div class="admin-card-title">Products (${filtered.length})</div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <div class="search-input-admin">
+            <i class="fa fa-search"></i>
+            <input type="text" placeholder="Search products…" id="searchProd" oninput="renderPage(this.value)" value="${filter}">
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openAddModal()"><i class="fa fa-plus"></i> Add Product</button>
+        </div>
+      </div>
+      <div class="admin-card-body" style="padding:0;">
+        <div class="table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Status</th>
+                <th>Featured</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filtered.length ? filtered.map(p => `
+              <tr>
+                <td><img class="td-img" src="${p.image||p.images?.[0]||'../assets/images/placeholder.jpg'}" alt="${p.name}" onerror="this.src='../assets/images/placeholder.jpg'"></td>
+                <td><div class="td-name">${p.name}</div><div style="font-size:0.75rem;color:var(--gray-600);">${p.description?.substring(0,60)||''}…</div></td>
+                <td><span class="status-badge status-active" style="background:var(--pink-pale);color:var(--pink);">${p.category||'—'}</span></td>
+                <td class="td-price">₹${(p.price||0).toLocaleString('en-IN')}${p.originalPrice?`<br><span style="font-size:0.75rem;color:var(--gray-400);text-decoration:line-through;">₹${p.originalPrice.toLocaleString('en-IN')}</span>`:''}</td>
+                <td><span style="font-weight:600;color:${(p.stock||0)>0?'var(--success)':'var(--danger)'};">${p.stock||0}</span></td>
+                <td><span class="status-badge ${p.active!==false?'status-active':'status-inactive'}">${p.active!==false?'Active':'Inactive'}</span></td>
+                <td>
+                  <label class="toggle">
+                    <input type="checkbox" ${p.featured?'checked':''} onchange="toggleFeatured('${p.id}',this.checked)">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </td>
+                <td>
+                  <div class="action-btns">
+                    <button class="action-btn action-btn-edit" onclick="openEditModal('${p.id}')" title="Edit"><i class="fa fa-edit"></i></button>
+                    <button class="action-btn action-btn-delete" onclick="deleteProductItem('${p.id}','${(p.image||'').replace(/'/g,"\\'")}','${p.name.replace(/'/g,"\\'")}')" title="Delete"><i class="fa fa-trash"></i></button>
+                  </div>
+                </td>
+              </tr>`).join('') : '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--gray-600);">No products found. <button class="btn btn-primary btn-sm" onclick="openAddModal()" style="margin-left:10px;">Add First Product</button></td></tr>'}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+
+    // Drag and drop
+    const area = document.getElementById('uploadArea');
+    area?.addEventListener('dragover', e => { e.preventDefault(); area.classList.add('drag'); });
+    area?.addEventListener('dragleave', () => area.classList.remove('drag'));
+    area?.addEventListener('drop', e => { e.preventDefault(); area.classList.remove('drag'); const f = e.dataTransfer.files[0]; if (f) handleImgUpload({files:[f]}); });
+  }
+
+  window.openAddModal = () => {
+    editingId = null; uploadedImageUrl = '';
+    document.getElementById('modalTitle').textContent = 'Add New Product';
+    ['pName','pPrice','pOriginalPrice','pStock','pRating','pDesc','pFeatures'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+    document.getElementById('pCategory').value = '';
+    ['pFeatured','pTrending','pNew'].forEach(id => { document.getElementById(id).checked = false; });
+    document.getElementById('imgPreviewWrap').innerHTML = '';
+    document.getElementById('uploadStatus').textContent = '';
+    openModal('productModal');
+  };
+
+  window.openEditModal = (id) => {
+    const p = allProducts.find(x => x.id === id);
+    if (!p) return;
+    editingId = id; uploadedImageUrl = p.image || p.images?.[0] || '';
+    document.getElementById('modalTitle').textContent = 'Edit Product';
+    document.getElementById('pName').value = p.name || '';
+    document.getElementById('pCategory').value = p.category || '';
+    document.getElementById('pPrice').value = p.price || '';
+    document.getElementById('pOriginalPrice').value = p.originalPrice || '';
+    document.getElementById('pStock').value = p.stock || '';
+    document.getElementById('pRating').value = p.rating || '';
+    document.getElementById('pDesc').value = p.description || '';
+    document.getElementById('pFeatures').value = (p.features || []).join('\n');
+    document.getElementById('pFeatured').checked = !!p.featured;
+    document.getElementById('pTrending').checked = !!p.trending;
+    document.getElementById('pNew').checked = !!p.isNew;
+    const prev = document.getElementById('imgPreviewWrap');
+    prev.innerHTML = uploadedImageUrl ? `<div class="preview-img-wrap"><img src="${uploadedImageUrl}" alt="Current image"><button class="preview-remove" onclick="clearImage()">✕</button></div>` : '';
+    document.getElementById('uploadStatus').textContent = uploadedImageUrl ? '✅ Image loaded' : '';
+    openModal('productModal');
+  };
+
+  window.closeProductModal = () => closeModal('productModal');
+  window.clearImage = () => { uploadedImageUrl = ''; document.getElementById('imgPreviewWrap').innerHTML = ''; document.getElementById('uploadStatus').textContent = ''; };
+
+  window.handleImgUpload = async (input) => {
+    const file = input.files?.[0] || input[0];
+    if (!file) return;
+    document.getElementById('uploadStatus').textContent = '⏳ Uploading image…';
+    try {
+      uploadedImageUrl = await uploadImage(file, 'products');
+      document.getElementById('imgPreviewWrap').innerHTML = `<div class="preview-img-wrap"><img src="${uploadedImageUrl}" alt="Uploaded"><button class="preview-remove" onclick="clearImage()">✕</button></div>`;
+      document.getElementById('uploadStatus').textContent = '✅ Image uploaded successfully!';
+    } catch(e) {
+      document.getElementById('uploadStatus').textContent = `❌ Upload failed: ${e.message}`;
+    }
+  };
+
+  window.saveProduct = async () => {
+    const name = document.getElementById('pName').value.trim();
+    const category = document.getElementById('pCategory').value;
+    const price = parseFloat(document.getElementById('pPrice').value);
+    if (!name || !category || !price) { adminToast('Please fill all required fields', 'error'); return; }
+
+    const btn = document.getElementById('saveProductBtn');
+    btn.textContent = 'Saving…'; btn.disabled = true;
+
+    const data = {
+      name, category, price,
+      originalPrice: parseFloat(document.getElementById('pOriginalPrice').value) || null,
+      stock: parseInt(document.getElementById('pStock').value) || 0,
+      rating: parseFloat(document.getElementById('pRating').value) || 4.5,
+      description: document.getElementById('pDesc').value.trim(),
+      features: document.getElementById('pFeatures').value.split('\n').filter(f => f.trim()),
+      image: uploadedImageUrl,
+      featured: document.getElementById('pFeatured').checked,
+      trending: document.getElementById('pTrending').checked,
+      isNew: document.getElementById('pNew').checked,
+      active: true,
+      reviews: editingId ? allProducts.find(p=>p.id===editingId)?.reviews || 0 : 0,
+    };
+
+    try {
+      if (editingId) { await updateProduct(editingId, data); adminToast('Product updated!'); }
+      else { await addProduct(data); adminToast('Product added!'); }
+      closeModal('productModal');
+      allProducts = await getProducts({});
+      renderPage();
+    } catch(e) {
+      adminToast(`Error: ${e.message}`, 'error');
+    } finally {
+      btn.innerHTML = '<i class="fa fa-save"></i> Save Product'; btn.disabled = false;
+    }
+  };
+
+  window.deleteProductItem = async (id, imgUrl, name) => {
+    if (!confirmDelete(`Delete "${name}"? This cannot be undone.`)) return;
+    try {
+      await deleteProduct(id);
+     
+      adminToast('Product deleted');
+      allProducts = await getProducts({});
+      renderPage();
+    } catch(e) { adminToast(`Error: ${e.message}`, 'error'); }
+  };
+
+  window.toggleFeatured = async (id, val) => {
+    try { await updateProduct(id, { featured: val }); adminToast(`Product ${val?'featured':'unfeatured'}`); }
+    catch(e) { adminToast('Failed to update', 'error'); }
+  };
+
+  window.renderPage = renderPage;
+  await init();
+</script>
+</body>
+</html>

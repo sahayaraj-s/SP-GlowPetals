@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SP GlowPetals – Premium Gift Candles, Flowers, Surprise Boxes, Romantic & Personalized Gifts in Chennai. Same Day Delivery Available.">
+  <title>SP GlowPetals</title>
+  <link rel="icon" type="image/jpeg" href="assets/images/ti.jpeg">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <style>
+    /* ---- Surprise Gift Section ---- */
+    .surprise-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:24px; }
+    .surprise-card {
+      position:relative; border-radius:var(--radius-lg); overflow:hidden;
+      aspect-ratio:4/5; cursor:pointer;
+    }
+    .surprise-card img { width:100%; height:100%; object-fit:cover; transition:transform 0.6s ease; }
+    .surprise-card:hover img { transform:scale(1.06); }
+    .surprise-card-overlay {
+      position:absolute; inset:0;
+      background:linear-gradient(to top, rgba(26,26,46,0.88) 0%, rgba(255,79,139,0.1) 50%, transparent 100%);
+      display:flex; flex-direction:column; justify-content:flex-end; padding:24px;
+    }
+    .surprise-card h3 { font-family:var(--font-display); color:white; font-size:1.2rem; margin-bottom:6px; }
+    .surprise-card p { color:rgba(255,255,255,0.8); font-size:0.85rem; margin-bottom:14px; }
+    /* ---- Instagram Grid ---- */
+    .insta-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:6px; }
+    .insta-item { aspect-ratio:1; overflow:hidden; border-radius:var(--radius-sm); background:var(--pink-pale); position:relative; cursor:pointer; }
+    .insta-item:hover .insta-overlay { opacity:1; }
+    .insta-overlay { position:absolute; inset:0; background:rgba(255,79,139,0.7); display:flex; align-items:center; justify-content:center; color:white; font-size:1.4rem; opacity:0; transition:var(--transition); }
+    /* ---- Deal Products ---- */
+    .deal-layout { display:grid; grid-template-columns:1fr 2fr; gap:32px; align-items:start; }
+    .deal-banner {
+      border-radius:var(--radius-lg); overflow:hidden; position:relative;
+      background:linear-gradient(135deg,#2d1b3d,#1a1a2e); padding:40px 30px;
+      text-align:center; min-height:350px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    }
+    .deal-banner::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at 50% 50%,rgba(255,79,139,0.2),transparent 70%); }
+    .deal-emoji { font-size:4rem; margin-bottom:16px; }
+    .deal-tag { color:var(--pink); font-size:0.8rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:10px; }
+    .deal-title { font-family:var(--font-display); color:white; font-size:1.8rem; font-weight:700; margin-bottom:10px; position:relative; }
+    @media(max-width:768px){.deal-layout{grid-template-columns:1fr;}.insta-grid{grid-template-columns:repeat(3,1fr);}}
+  </style>
+</head>
+<body>
+  <!-- Loader -->
+  <div class="loader-overlay" id="loader">
+    <div class="loader-ring"></div>
+    <div class="loader-text">GlowPetals ✦</div>
+  </div>
+
+  <!-- Navbar -->
+  <div id="navbar"></div>
+
+  <!-- Hero Slider -->
+  <div class="hero-slider" id="heroSlider">
+    <div class="hero-slide active" style="background:linear-gradient(135deg,#1a1a2e 0%,#2d1b3d 50%,#3d1a2e 100%);">
+      <div class="hero-slide-overlay"></div>
+      <div class="container hero-content" style="padding-left:60px;">
+        <div class="tag">✦ New Collection 2025</div>
+        <h1>Gift the Magic of<br><em style="color:var(--pink)">GlowPetals</em></h1>
+        <p>Handcrafted luxury gifts, fragrant candles & fresh flowers — delivered with love across Chennai.</p>
+        <div class="hero-actions">
+          <a href="/pages//pages/shop.html" class="btn btn-primary btn-lg">/pages//pages/shop Now ✦</a>
+          <a href="pages/categories.html" class="btn btn-white btn-lg">Explore Collections</a>
+        </div>
+      </div>
+    </div>
+    <div class="hero-slide" style="background:linear-gradient(135deg,#2d1b3d 0%,#1a1a2e 100%);">
+      <div class="hero-slide-overlay"></div>
+      <div class="container hero-content" style="padding-left:60px;">
+        <div class="tag">💕 Valentine Special</div>
+        <h1>Love in Every<br><em style="color:var(--pink)">Petal & Glow</em></h1>
+        <p>Surprise your loved ones with our curated romantic gift boxes, roses & luxury candles.</p>
+        <div class="hero-actions">
+          <a href="/pages//pages/shop.html?cat=romantic" class="btn btn-primary btn-lg">/pages//pages/shop Romantic</a>
+          <a href="/pages//pages/shop.html?cat=flowers" class="btn btn-white btn-lg">Fresh Flowers</a>
+        </div>
+      </div>
+    </div>
+    <div class="hero-slide" style="background:linear-gradient(135deg,#1a2e1a 0%,#1a1a2e 100%);">
+      <div class="hero-slide-overlay"></div>
+      <div class="container hero-content" style="padding-left:60px;">
+        <div class="tag">🎁 Surprise Boxes</div>
+        <h1>Unbox Pure<br><em style="color:var(--rose-gold)">Joy & Wonder</em></h1>
+        <p>Our mystery gift boxes are packed with premium surprises — perfect for any occasion!</p>
+        <div class="hero-actions">
+          <a href="/pages/shop.html?cat=surprise-boxes" class="btn btn-primary btn-lg">Explore Boxes</a>
+          <a href="pages/contact.html" class="btn btn-white btn-lg">Custom Order</a>
+        </div>
+      </div>
+    </div>
+    <button class="hero-arrow prev" id="heroPrev">‹</button>
+    <button class="hero-arrow next" id="heroNext">›</button>
+    <div class="hero-dots" id="heroDots"></div>
+  </div>
+
+  <!-- Featured Categories -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="tag">Browse by Category</span>
+        <h2>Find Your Perfect Gift</h2>
+        <div class="divider"></div>
+      </div>
+      <div class="categories-grid" id="categoriesGrid">
+        <!-- Loaded from Firebase / defaults -->
+        <div class="category-card" onclick="location.href='/pages/shop.html?cat=candles'" style="background:linear-gradient(135deg,#ffd6e7,#ffe0f0)">
+          <div class="category-overlay"><div><div class="category-name">🕯️ Gift Candles</div><div class="category-count">View All</div></div></div>
+        </div>
+        <div class="category-card" onclick="location.href='/pages/shop.html?cat=flowers'" style="background:linear-gradient(135deg,#fce7f3,#fdd0e8)">
+          <div class="category-overlay"><div><div class="category-name">🌹 Flowers</div><div class="category-count">View All</div></div></div>
+        </div>
+        <div class="category-card" onclick="location.href='/pages/shop.html?cat=surprise-boxes'" style="background:linear-gradient(135deg,#f3e8ff,#ede9fe)">
+          <div class="category-overlay"><div><div class="category-name">🎁 Surprise Boxes</div><div class="category-count">View All</div></div></div>
+        </div>
+        <div class="category-card" onclick="location.href='/pages/shop.html?cat=romantic'" style="background:linear-gradient(135deg,#ffe4e6,#fecdd3)">
+          <div class="category-overlay"><div><div class="category-name">💕 Romantic</div><div class="category-count">View All</div></div></div>
+        </div>
+        <div class="category-card" onclick="location.href='/pages/shop.html?cat=teddy'" style="background:linear-gradient(135deg,#fef3c7,#fde68a)">
+          <div class="category-overlay"><div><div class="category-name">🧸 Teddy Bears</div><div class="category-count">View All</div></div></div>
+        </div>
+        <div class="category-card" onclick="location.href='/pages/shop.html?cat=chocolates'" style="background:linear-gradient(135deg,#fff7ed,#fed7aa)">
+          <div class="category-overlay"><div><div class="category-name">🍫 Chocolates</div><div class="category-count">View All</div></div></div>
+        </div>
+        <div class="category-card" onclick="location.href='/pages/shop.html?cat=hampers'" style="background:linear-gradient(135deg,#ecfdf5,#a7f3d0)">
+          <div class="category-overlay"><div><div class="category-name">🎀 Hampers</div><div class="category-count">View All</div></div></div>
+        </div>
+        <div class="category-card" onclick="location.href='/pages/shop.html?cat=premium'" style="background:linear-gradient(135deg,#fff0f6,#ffd6e7)">
+          <div class="category-overlay"><div><div class="category-name">👑 Premium Gifts</div><div class="category-count">View All</div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+ 
+  
+
+  <!-- Featured Products -->
+  <section class="section" style="background:var(--off-white)">
+    <div class="container">
+      <div class="section-header">
+        <span class="tag">Handpicked for You</span>
+        <h2>Featured Products</h2>
+        <p>Our most loved gifting collections, curated with care and delivered with joy.</p>
+        <div class="divider"></div>
+      </div>
+      <div class="products-grid" id="featuredProducts">
+        <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-600);">Loading products…</div>
+      </div>
+      <div class="text-center" style="margin-top:40px;">
+        <a href="/pages/shop.html" class="btn btn-primary btn-lg">View All Products ✦</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trending Products -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="tag">🔥 Hot Right Now</span>
+        <h2>Trending Gifts</h2>
+        <div class="divider"></div>
+      </div>
+      <div class="products-grid" id="trendingProducts">
+        <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-600);">Loading…</div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- Why Choose Us -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="tag">Why GlowPetals?</span>
+        <h2>The GlowPetals Promise</h2>
+        <div class="divider"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:24px;">
+        <div class="card-glass" style="padding:32px 24px;text-align:center;">
+          <div style="font-size:2.5rem;margin-bottom:16px;">🚀</div>
+          <h4 style="margin-bottom:10px;">Fast Delivery</h4>
+          <p style="font-size:0.88rem;color:var(--gray-600);">Order before 4 PM and receive your gift the 3 day.</p>
+        </div>
+        <div class="card-glass" style="padding:32px 24px;text-align:center;">
+          <div style="font-size:2.5rem;margin-bottom:16px;">🎨</div>
+          <h4 style="margin-bottom:10px;">Premium Packaging</h4>
+          <p style="font-size:0.88rem;color:var(--gray-600);">Every gift is beautifully wrapped with luxury packaging.</p>
+        </div>
+        <div class="card-glass" style="padding:32px 24px;text-align:center;">
+          <div style="font-size:2.5rem;margin-bottom:16px;">✍️</div>
+          <h4 style="margin-bottom:10px;">Personalization</h4>
+          <p style="font-size:0.88rem;color:var(--gray-600);">Custom messages, names & photos on every order.</p>
+        </div>
+        <div class="card-glass" style="padding:32px 24px;text-align:center;">
+          <div style="font-size:2.5rem;margin-bottom:16px;">💯</div>
+          <h4 style="margin-bottom:10px;">100% Satisfaction</h4>
+          <p style="font-size:0.88rem;color:var(--gray-600);">Love it or we'll make it right. Your joy is our promise.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="section" style="background:var(--off-white)">
+    <div class="container">
+      <div class="section-header">
+        <span class="tag">Customer Love</span>
+        <h2>What Our Customers Say</h2>
+        <div class="divider"></div>
+      </div>
+      <div class="testimonials-slider">
+        <div class="testimonials-track" id="testimonialTrack">
+          <div class="testimonial-card">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-text">"Ordered a surprise box for my girlfriend's birthday and she was absolutely speechless! The packaging was gorgeous and the gifts were premium quality. Will definitely order again!"</p>
+            <div class="testimonial-author">
+              <div class="author-avatar">👩</div>
+              <div><div class="author-name">Priya S.</div><div class="author-loc">Chennai</div></div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-text">"The candles are divine! The rose-scented ones filled my entire room with the most beautiful fragrance. SP GlowPetals has become my go-to for all gifting needs."</p>
+            <div class="testimonial-author">
+              <div class="author-avatar">👨</div>
+              <div><div class="author-name">Arjun K.</div><div class="author-loc">Coimbatore</div></div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-text">"Same-day delivery saved my anniversary! The romantic hamper was absolutely beautiful — fresh flowers, chocolates, and a personalized card. My wife loved every bit of it!"</p>
+            <div class="testimonial-author">
+              <div class="author-avatar">👨</div>
+              <div><div class="author-name">Ravi M.</div><div class="author-loc">Bangalore</div></div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-text">"Personalized gifts are their specialty! Got a custom photo frame with a beautiful message for my mom — she was in tears (happy ones!). Exceptional quality and service."</p>
+            <div class="testimonial-author">
+              <div class="author-avatar">👩</div>
+              <div><div class="author-name">Kavitha R.</div><div class="author-loc">Madurai</div></div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-text">"The teddy bear and chocolate combo was too adorable! Super fast delivery and the packaging had such a premium feel. 10/10 would recommend to everyone!"</p>
+            <div class="testimonial-author">
+              <div class="author-avatar">👩</div>
+              <div><div class="author-name">Ananya T.</div><div class="author-loc">Chennai</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Instagram Section -->
+  <section class="section-sm">
+    <div class="container">
+      <div class="section-header">
+        <span class="tag">@spglowpetals</span>
+        <h2>Follow Us on Instagram</h2>
+        <p>Tag us in your unboxing moments & get featured!</p>
+        <div class="divider"></div>
+      </div>
+      <div class="insta-grid">
+        <div class="insta-item" style="background:linear-gradient(135deg,#ffd6e7,#ffb3d1);display:flex;align-items:center;justify-content:center;font-size:2.5rem;">🕯️<div class="insta-overlay">❤️</div></div>
+        <div class="insta-item" style="background:linear-gradient(135deg,#f3e8ff,#ddd6fe);display:flex;align-items:center;justify-content:center;font-size:2.5rem;">🌹<div class="insta-overlay">❤️</div></div>
+        <div class="insta-item" style="background:linear-gradient(135deg,#ecfdf5,#a7f3d0);display:flex;align-items:center;justify-content:center;font-size:2.5rem;">🎁<div class="insta-overlay">❤️</div></div>
+        <div class="insta-item" style="background:linear-gradient(135deg,#fff7ed,#fed7aa);display:flex;align-items:center;justify-content:center;font-size:2.5rem;">💕<div class="insta-overlay">❤️</div></div>
+        <div class="insta-item" style="background:linear-gradient(135deg,#fef9ec,#fde68a);display:flex;align-items:center;justify-content:center;font-size:2.5rem;">🎀<div class="insta-overlay">❤️</div></div>
+        <div class="insta-item" style="background:linear-gradient(135deg,#ffe4e6,#fecdd3);display:flex;align-items:center;justify-content:center;font-size:2.5rem;">🍫<div class="insta-overlay">❤️</div></div>
+      </div>
+      <div class="text-center" style="margin-top:24px;">
+        <a href="https://instagram.com/spglowpetals" target="_blank" class="btn btn-outline">Follow @spglowpetals ✦</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <div class="newsletter-section">
+    <div class="container">
+      <span class="tag">Stay in the Loop</span>
+      <h2 style="margin-top:10px;">Get Exclusive Offers & Updates</h2>
+      <p style="color:var(--gray-600);margin-top:10px;">Subscribe to receive early access to new collections, special deals & gifting inspiration.</p>
+      <form class="newsletter-form" id="newsletterForm" onsubmit="handleNewsletter(event)">
+        <input class="newsletter-input" type="email" placeholder="Enter your email address…" required>
+        <button class="newsletter-btn" type="submit">Subscribe ✦</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div id="footer"></div>
+
+  <!-- WhatsApp Float -->
+  <a href="https://wa.me/919384845814?text=Hi%20SP%20GlowPetals!%20I%20need%20help%20with%20a%20gift." target="_blank" class="whatsapp-float" title="WhatsApp Us">
+    <div class="whatsapp-pulse"></div>
+    <span>💬</span>
+  </a>
+
+  <script type="module">
+    import { renderNavbar, renderFooter, productCardHTML, bindProductCardEvents, showLoader, hideLoader, showToast } from './assets/js/components.js';
+    import { getProducts, getBanners, getCategories } from './assets/js/firebase.js';
+
+    renderNavbar('home');
+    renderFooter();
+
+    // Hero Slider
+    const slides = document.querySelectorAll('.hero-slide');
+    const dotsContainer = document.getElementById('heroDots');
+    let currentSlide = 0;
+    let slideTimer;
+    slides.forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.className = `hero-dot ${i === 0 ? 'active' : ''}`;
+      dot.setAttribute('aria-label', `Slide ${i+1}`);
+      dot.addEventListener('click', () => goToSlide(i));
+      dotsContainer.appendChild(dot);
+    });
+    function goToSlide(n) {
+      slides[currentSlide].classList.remove('active');
+      dotsContainer.children[currentSlide].classList.remove('active');
+      currentSlide = (n + slides.length) % slides.length;
+      slides[currentSlide].classList.add('active');
+      dotsContainer.children[currentSlide].classList.add('active');
+    }
+    function autoSlide() { slideTimer = setInterval(() => goToSlide(currentSlide + 1), 5000); }
+    document.getElementById('heroPrev')?.addEventListener('click', () => { clearInterval(slideTimer); goToSlide(currentSlide - 1); autoSlide(); });
+    document.getElementById('heroNext')?.addEventListener('click', () => { clearInterval(slideTimer); goToSlide(currentSlide + 1); autoSlide(); });
+    autoSlide();
+    
+// Load Firebase Banners
+async function loadBanners() {
+
+  try {
+
+    const banners = await getBanners();
+
+    // only active banners
+    const activeBanners = banners
+      .filter(b => b.active !== false)
+      .sort((a, b) => (a.sort || 0) - (b.sort || 0));
+
+    if (!activeBanners.length) return;
+
+    const heroSlider = document.getElementById('heroSlider');
+
+    heroSlider.innerHTML = `
+      ${activeBanners.map((banner, index) => `
+        <div class="hero-slide ${index === 0 ? 'active' : ''}"
+          style="
+            background-image:url('${banner.image}');
+            background-size:cover;
+            background-position:center;
+          ">
+
+          <div class="hero-slide-overlay"></div>
+
+          <div class="container hero-content" style="padding-left:60px;">
+
+            <div class="tag">
+              ✨ SP GlowPetals
+            </div>
+
+            <h1>${banner.title || ''}</h1>
+
+            <p>${banner.subtitle || ''}</p>
+
+            <div class="hero-actions">
+              <a href="${banner.btnLink || '/pages/shop.html'}"
+                 class="btn btn-primary btn-lg">
+
+                 ${banner.btnText || 'Shop Now'}
+              </a>
+            </div>
+
+          </div>
+        </div>
+      `).join('')}
+
+      <button class="hero-arrow prev" id="heroPrev">‹</button>
+      <button class="hero-arrow next" id="heroNext">›</button>
+
+      <div class="hero-dots" id="heroDots"></div>
+    `;
+
+    // REINITIALIZE SLIDER
+    const slides = document.querySelectorAll('.hero-slide');
+    const dotsContainer = document.getElementById('heroDots');
+
+    let currentSlide = 0;
+
+    // create dots
+    slides.forEach((_, i) => {
+
+      const dot = document.createElement('button');
+
+      dot.className = `hero-dot ${i === 0 ? 'active' : ''}`;
+
+      dot.addEventListener('click', () => goToSlide(i));
+
+      dotsContainer.appendChild(dot);
+
+    });
+
+    function goToSlide(n) {
+
+      slides[currentSlide].classList.remove('active');
+      dotsContainer.children[currentSlide].classList.remove('active');
+
+      currentSlide = (n + slides.length) % slides.length;
+
+      slides[currentSlide].classList.add('active');
+      dotsContainer.children[currentSlide].classList.add('active');
+
+    }
+
+    // auto slide
+    setInterval(() => {
+
+      goToSlide(currentSlide + 1);
+
+    }, 5000);
+
+    // arrows
+    document.getElementById('heroPrev')
+      ?.addEventListener('click', () => {
+        goToSlide(currentSlide - 1);
+      });
+
+    document.getElementById('heroNext')
+      ?.addEventListener('click', () => {
+        goToSlide(currentSlide + 1);
+      });
+
+  } catch (e) {
+
+    console.error("Banner Load Error:", e);
+
+  }
+}
+
+loadBanners();
+
+
+   
+    // Load Products
+    async function loadProducts() {
+      showLoader();
+      try {
+        const products = await getProducts({});
+        const featured = products.filter(p => p.featured).slice(0, 8);
+        const trending = products.filter(p => p.trending).slice(0, 8);
+        const deals = products.slice(0, 4);
+
+        const renderGrid = (containerId, items) => {
+          const el = document.getElementById(containerId);
+          if (!el) return;
+          if (!items.length) { el.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-600);">No products yet. Check back soon! 🌸</div>`; return; }
+          el.innerHTML = items.map(p => productCardHTML(p)).join('');
+          bindProductCardEvents(el, items);
+        };
+        renderGrid('featuredProducts', featured.length ? featured : products.slice(0, 8));
+        renderGrid('trendingProducts', trending.length ? trending : products.slice(0, 8));
+        renderGrid('dealProducts', deals.length ? deals : []);
+
+        async function loadCategories() {
+
+  try {
+
+    const categories = await getCategories();
+
+    const grid = document.getElementById('categoriesGrid');
+
+    const activeCategories = categories.filter(c => c.active !== false);
+
+    grid.innerHTML = activeCategories.map(cat => `
+
+      <div class="category-card"
+        onclick="location.href='/pages/shop.html?cat=${cat.slug}'"
+        style="background:linear-gradient(135deg,#ffd6e7,#ffe0f0)">
+
+        ${cat.image ? `
+
+          <img
+            src="${cat.image}"
+            style="
+              width:100%;
+              height:100%;
+              object-fit:cover;
+            ">
+
+        ` : ''}
+
+        <div class="category-overlay">
+
+          <div>
+
+            <div class="category-name">
+              ${cat.icon || '✨'} ${cat.name}
+            </div>
+
+            <div class="category-count">
+              View All
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `).join('');
+
+  } catch (e) {
+
+    console.error(e);
+
+  }
+
+}
+
+loadCategories();
+
+        // Search overlay
+        const { renderSearch } = await import('./assets/js/components.js');
+        renderSearch(products);
+      } catch(e) {
+        console.error(e);
+        ['featuredProducts','trendingProducts','dealProducts'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-600);">Unable to load products. <a href="#" onclick="location.reload()">Retry</a></div>`;
+        });
+      } finally { hideLoader(); }
+    }
+    
+    loadProducts();
+
+    // Testimonials auto-scroll
+    const track = document.getElementById('testimonialTrack');
+    if (track) {
+      let tIdx = 0;
+      const cards = track.querySelectorAll('.testimonial-card');
+      const visible = window.innerWidth < 768 ? 1 : window.innerWidth < 1024 ? 2 : 3;
+      setInterval(() => {
+        tIdx = (tIdx + 1) % (cards.length - visible + 1);
+        const w = cards[0].offsetWidth + 16;
+        track.style.transform = `translateX(-${tIdx * w}px)`;
+      }, 4000);
+    }
+
+    // Newsletter
+    window.handleNewsletter = (e) => {
+      e.preventDefault();
+      const email = e.target.querySelector('input').value;
+      showToast(`✨ Thank you! "${email}" has been subscribed.`, 'success');
+      e.target.reset();
+    };
+  </script>
+</body>
+</html>

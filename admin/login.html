@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login – SP GlowPetals</title>
+  <link rel="icon" type="image/jpeg" href="../assets/images/ti.jpeg">
+  <link rel="stylesheet" href="../assets/css/admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="admin-login-page">
+    <div class="login-card">
+      <div class="login-logo">
+        <img src="../assets/images/logo.png" alt="SP GlowPetals" onerror="this.style.display='none'">
+        <h2>Admin Panel</h2>
+        <p>SP GlowPetals Management</p>
+      </div>
+      <div class="login-err" id="loginErr">Invalid email or password.</div>
+      <form class="login-form" id="loginForm">
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input class="form-control" id="loginEmail" type="email" placeholder="admin@spglowpetals.com" value="admin@spglowpetals.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div style="position:relative;">
+            <input class="form-control" id="loginPassword" type="password" placeholder="••••••••" required style="padding-right:44px;">
+            <button type="button" id="togglePwd" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer;color:var(--gray-600);font-size:1rem;">👁️</button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" id="loginBtn">
+          <i class="fa fa-sign-in-alt"></i> Sign In to Admin
+        </button>
+      </form>
+      <div style="text-align:center;margin-top:20px;">
+        <a href="../index.html" style="font-size:0.85rem;color:var(--gray-600);text-decoration:none;">← Back to Store</a>
+      </div>
+    </div>
+  </div>
+  <script type="module">
+    import { adminLogin, onAuthChange } from '../assets/js/firebase.js';
+
+    // If already logged in, redirect
+    onAuthChange(user => { if (user) location.href = 'dashboard.html'; });
+
+    document.getElementById('togglePwd').addEventListener('click', function() {
+      const inp = document.getElementById('loginPassword');
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+      this.textContent = inp.type === 'password' ? '👁️' : '🙈';
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('loginBtn');
+      const err = document.getElementById('loginErr');
+      err.style.display = 'none';
+      btn.textContent = 'Signing in…'; btn.disabled = true;
+      try {
+        await adminLogin(
+          document.getElementById('loginEmail').value,
+          document.getElementById('loginPassword').value
+        );
+        location.href = 'dashboard.html';
+      } catch(ex) {
+        err.style.display = 'block';
+        err.textContent = ex.code === 'auth/invalid-credential' ? 'Invalid email or password.' : ex.message;
+        btn.innerHTML = '<i class="fa fa-sign-in-alt"></i> Sign In to Admin';
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

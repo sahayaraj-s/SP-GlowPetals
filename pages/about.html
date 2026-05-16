@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us – SP GlowPetals</title>
+  <link rel="icon" type="image/jpeg" href="../assets/images/ti.jpeg">
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <style>
+    .about-hero{background:linear-gradient(135deg,var(--pink-pale),white);padding:80px 0;text-align:center;border-bottom:1px solid var(--pink-light);}
+    .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
+    .about-img{border-radius:var(--radius-xl);overflow:hidden;aspect-ratio:1;background:linear-gradient(135deg,var(--pink-pale),#ffe0f0);display:flex;align-items:center;justify-content:center;font-size:8rem;}
+    .value-card{background:white;border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:28px;text-align:center;transition:var(--transition);}
+    .value-card:hover{box-shadow:var(--shadow-md);transform:translateY(-4px);border-color:var(--pink-light);}
+    .value-icon{font-size:2.5rem;margin-bottom:14px;}
+    @media(max-width:768px){.about-grid{grid-template-columns:1fr;}.about-img{aspect-ratio:16/9;}}
+  </style>
+</head>
+<body>
+  <div id="navbar"></div>
+  <div class="about-hero">
+    <div class="container">
+      <span class="tag">Our Story</span>
+      <h1 style="margin-top:14px;">About SP GlowPetals</h1>
+      <p style="color:var(--gray-600);max-width:580px;margin:16px auto;font-size:1.05rem;">Born from a passion for beautiful gifting experiences, we craft every gift with love, creativity, and attention to detail.</p>
+    </div>
+  </div>
+  <section class="section">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-img">🌸</div>
+        <div>
+          <span class="tag">Who We Are</span>
+          <h2 style="margin:14px 0;">Bringing Joy Through Premium Gifts</h2>
+          <p style="color:var(--gray-600);margin-bottom:16px;line-height:1.8;">SP GlowPetals was founded with a simple mission: to make gifting an unforgettable experience. Based in Chennai, we specialize in handcrafted gift candles, fresh flowers, surprise boxes, and personalized gifts that speak from the heart.</p>
+          <p style="color:var(--gray-600);margin-bottom:24px;line-height:1.8;">Every product is carefully curated, beautifully packaged, and delivered with the care it deserves. Whether it's a birthday, anniversary, Valentine's Day, or just because — we have the perfect gift for every moment.</p>
+          <div style="display:flex;gap:24px;flex-wrap:wrap;">
+            <div style="text-align:center;"><div style="font-family:var(--font-display);font-size:2.2rem;font-weight:700;color:var(--pink);">5000+</div><div style="font-size:0.85rem;color:var(--gray-600);">Happy Customers</div></div>
+            <div style="text-align:center;"><div style="font-family:var(--font-display);font-size:2.2rem;font-weight:700;color:var(--pink);">200+</div><div style="font-size:0.85rem;color:var(--gray-600);">Gift Collections</div></div>
+            <div style="text-align:center;"><div style="font-family:var(--font-display);font-size:2.2rem;font-weight:700;color:var(--pink);">4.9★</div><div style="font-size:0.85rem;color:var(--gray-600);">Average Rating</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section" style="background:var(--off-white)">
+    <div class="container">
+      <div class="section-header"><span class="tag">Our Values</span><h2>What Makes Us Special</h2><div class="divider"></div></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px;">
+        <div class="value-card"><div class="value-icon">💕</div><h4 style="margin-bottom:8px;">Made with Love</h4><p style="font-size:0.88rem;color:var(--gray-600);">Every gift is assembled with genuine care and attention to detail.</p></div>
+        <div class="value-card"><div class="value-icon">🌿</div><h4 style="margin-bottom:8px;">Eco-Friendly</h4><p style="font-size:0.88rem;color:var(--gray-600);">Sustainable packaging and responsibly sourced materials.</p></div>
+        <div class="value-card"><div class="value-icon">⚡</div><h4 style="margin-bottom:8px;">Fast Delivery</h4><p style="font-size:0.88rem;color:var(--gray-600);">Same-day delivery available for orders placed before 4 PM.</p></div>
+        <div class="value-card"><div class="value-icon">✨</div><h4 style="margin-bottom:8px;">Personalization</h4><p style="font-size:0.88rem;color:var(--gray-600);">Custom messages, names and photos on every order.</p></div>
+      </div>
+    </div>
+  </section>
+  <div style="background:linear-gradient(135deg,var(--pink),var(--pink-dark));padding:70px 0;text-align:center;">
+    <div class="container">
+      <h2 style="color:white;margin-bottom:14px;">Ready to Send Some Love?</h2>
+      <p style="color:rgba(255,255,255,0.85);margin-bottom:28px;">Explore our premium gift collections and make someone's day special.</p>
+      <a href="../pages/shop.html" class="btn btn-white btn-lg">Shop Now ✦</a>
+    </div>
+  </div>
+  <div id="footer"></div>
+  <a href="https://wa.me/919384845814" target="_blank" class="whatsapp-float"><div class="whatsapp-pulse"></div><span>💬</span></a>
+  <script type="module">
+    import { renderNavbar, renderFooter } from '../assets/js/components.js';
+    renderNavbar('about'); renderFooter();
+  </script>
+</body>
+</html>

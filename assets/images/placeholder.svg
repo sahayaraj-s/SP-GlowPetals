@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#fff0f6"/>
+  <rect x="120" y="140" width="160" height="120" rx="16" fill="#ffd6e7"/>
+  <text x="200" y="215" text-anchor="middle" font-size="48" fill="#ff4f8b">🌸</text>
+  <text x="200" y="290" text-anchor="middle" font-size="14" fill="#ff4f8b" font-family="sans-serif">SP GlowPetals</text>
+</svg>

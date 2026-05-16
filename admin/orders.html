@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders – SP GlowPetals Admin</title>
+  <link rel="icon" type="image/jpeg" href="../assets/images/ti.jpeg">
+  <link rel="stylesheet" href="../assets/css/admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+<script type="module">
+  import { requireAuth, renderAdminShell, adminToast, openModal, closeModal } from './admin-shell.js';
+  import { getOrders, updateOrder, listenOrders } from '../assets/js/firebase.js';
+
+  await requireAuth();
+  renderAdminShell('orders', 'Order Management');
+
+  const content = document.getElementById('adminContent');
+  let allOrders = []; let viewingOrder = null;
+
+  async function init() {
+    content.innerHTML = `<div style="text-align:center;padding:60px;">Loading orders…</div>`;
+    allOrders = await getOrders();
+    renderPage();
+
+    // Real-time updates
+    listenOrders(orders => { allOrders = orders; renderPage(document.getElementById('searchOrders')?.value || '', document.getElementById('statusFilter')?.value || ''); });
+  }
+
+  function renderPage(search = '', statusFilter = '') {
+    let filtered = allOrders;
+    if (search) filtered = filtered.filter(o => o.customer?.name?.toLowerCase().includes(search.toLowerCase()) || o.customer?.phone?.includes(search) || o.id.toLowerCase().includes(search.toLowerCase()));
+    if (statusFilter) filtered = filtered.filter(o => o.status === statusFilter);
+
+    const stats = {
+      total: allOrders.length,
+      pending: allOrders.filter(o => o.status === 'pending').length,
+      processing: allOrders.filter(o => o.status === 'processing').length,
+      completed: allOrders.filter(o => o.status === 'completed').length,
+      cancelled: allOrders.filter(o => o.status === 'cancelled').length,
+      revenue: allOrders.filter(o => o.status !== 'cancelled').reduce((s,o) => s + (o.total||0), 0),
+    };
+
+    content.innerHTML = `
+    <!-- Order Detail Modal -->
+    <div class="modal-overlay" id="orderModal">
+      <div class="modal" style="max-width:640px;">
+        <div class="modal-header">
+          <div class="modal-title">Order Details</div>
+          <button class="modal-close" onclick="closeModal('orderModal')">✕</button>
+        </div>
+        <div class="modal-body" id="orderModalBody">Loading…</div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal('orderModal')">Close</button>
+          <button class="btn btn-primary" id="waOrderBtn" onclick="waContact()">💬 WhatsApp Customer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mini stats -->
+    <div class="stats-grid" style="margin-bottom:20px;">
+      <div class="stat-card"><div class="stat-icon pink"><i class="fa fa-shopping-bag"></i></div><div><div class="stat-value">${stats.total}</div><div class="stat-label">Total Orders</div></div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:#fffbeb;color:var(--warning);"><i class="fa fa-clock"></i></div><div><div class="stat-value">${stats.pending}</div><div class="stat-label">Pending</div></div></div>
+      <div class="stat-card"><div class="stat-icon green"><i class="fa fa-check-circle"></i></div><div><div class="stat-value">${stats.completed}</div><div class="stat-label">Completed</div></div></div>
+      <div class="stat-card"><div class="stat-icon gold"><i class="fa fa-rupee-sign"></i></div><div><div class="stat-value">₹${stats.revenue.toLocaleString('en-IN')}</div><div class="stat-label">Revenue</div></div></div>
+    </div>
+
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <div class="admin-card-title">Orders (${filtered.length})</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+          <div class="search-input-admin">
+            <i class="fa fa-search"></i>
+            <input type="text" id="searchOrders" placeholder="Search by name, phone, ID…" oninput="renderPage(this.value,document.getElementById('statusFilter').value)" value="${search}">
+          </div>
+          <select id="statusFilter" class="form-select" style="max-width:160px;padding:9px 14px;" onchange="renderPage(document.getElementById('searchOrders').value,this.value)">
+            <option value="">All Status</option>
+            <option value="pending" ${statusFilter==='pending'?'selected':''}>Pending</option>
+            <option value="processing" ${statusFilter==='processing'?'selected':''}>Processing</option>
+            <option value="completed" ${statusFilter==='completed'?'selected':''}>Completed</option>
+            <option value="cancelled" ${statusFilter==='cancelled'?'selected':''}>Cancelled</option>
+          </select>
+        </div>
+      </div>
+      <div class="admin-card-body" style="padding:0;">
+        <div class="table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th><th>Date</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+              ${filtered.length ? filtered.map(o => `
+              <tr>
+                <td style="font-weight:700;color:var(--pink);font-size:0.9rem;">#${o.id.slice(-8).toUpperCase()}</td>
+                <td>
+                  <div class="td-name">${o.customer?.name || 'Guest'}</div>
+                  <div style="font-size:0.78rem;color:var(--gray-600);">${o.customer?.phone || ''}</div>
+                </td>
+                <td style="font-size:0.85rem;">${(o.items||[]).length} item${(o.items||[]).length!==1?'s':''}</td>
+                <td class="td-price">₹${(o.total||0).toLocaleString('en-IN')}</td>
+                <td style="font-size:0.82rem;text-transform:capitalize;">${o.payment || '—'}</td>
+                <td>
+                  <select class="form-select" style="font-size:0.8rem;padding:5px 28px 5px 8px;border-radius:20px;" onchange="updateStatus('${o.id}',this.value)">
+                    <option value="pending" ${o.status==='pending'?'selected':''}>Pending</option>
+                    <option value="processing" ${o.status==='processing'?'selected':''}>Processing</option>
+                    <option value="completed" ${o.status==='completed'?'selected':''}>Completed</option>
+                    <option value="cancelled" ${o.status==='cancelled'?'selected':''}>Cancelled</option>
+                  </select>
+                </td>
+                <td style="font-size:0.8rem;color:var(--gray-600);white-space:nowrap;">${o.createdAt?.toDate ? o.createdAt.toDate().toLocaleDateString('en-IN') : 'Just now'}</td>
+                <td>
+                  <div class="action-btns">
+                    <button class="action-btn action-btn-view" onclick="viewOrder('${o.id}')" title="View"><i class="fa fa-eye"></i></button>
+                    <a href="https://wa.me/${(o.customer?.phone||'').replace(/[^0-9]/g,'')||'919384845814'}?text=${encodeURIComponent('Hello '+( o.customer?.name||'')+'! Your SP GlowPetals order #'+o.id.slice(-8).toUpperCase()+' update:')}" target="_blank" class="action-btn action-btn-edit" title="WhatsApp"><i class="fa fa-comment"></i></a>
+                  </div>
+                </td>
+              </tr>`).join('') : '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--gray-600);">No orders found</td></tr>'}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  window.renderPage = renderPage;
+
+  window.updateStatus = async (id, status) => {
+    try {
+      await updateOrder(id, { status });
+      adminToast(`Order status updated to "${status}"`);
+      const idx = allOrders.findIndex(o => o.id === id);
+      if (idx > -1) allOrders[idx].status = status;
+    } catch(e) { adminToast('Failed to update status', 'error'); }
+  };
+
+  window.viewOrder = (id) => {
+    viewingOrder = allOrders.find(o => o.id === id);
+    if (!viewingOrder) return;
+    const o = viewingOrder;
+    document.getElementById('orderModalBody').innerHTML = `
+      <div style="margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <div><div style="font-size:0.78rem;color:var(--gray-600);">ORDER ID</div><div style="font-weight:700;color:var(--pink);font-size:1.1rem;">#${o.id.slice(-8).toUpperCase()}</div></div>
+          <span class="status-badge status-${o.status||'pending'}">${o.status||'pending'}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;background:var(--gray-100);padding:16px;border-radius:var(--radius-md);">
+          <div><div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;color:var(--gray-600);margin-bottom:4px;">Customer</div><div style="font-weight:600;">${o.customer?.name||'Guest'}</div><div style="font-size:0.85rem;color:var(--gray-600);">${o.customer?.phone||''}</div><div style="font-size:0.85rem;color:var(--gray-600);">${o.customer?.email||''}</div></div>
+          <div><div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;color:var(--gray-600);margin-bottom:4px;">Delivery Address</div><div style="font-size:0.88rem;color:var(--text-body);line-height:1.5;">${o.customer?.address||'Not provided'}</div></div>
+        </div>
+      </div>
+      ${o.customer?.giftMessage ? `<div style="background:var(--pink-pale);border-radius:var(--radius-sm);padding:12px;margin-bottom:16px;font-size:0.88rem;"><strong style="color:var(--pink);">🎁 Gift Message:</strong> ${o.customer.giftMessage}</div>` : ''}
+      <div style="margin-bottom:16px;">
+        <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;color:var(--gray-600);margin-bottom:10px;">Order Items</div>
+        ${(o.items||[]).map(item => `
+        <div style="display:flex;align-items:center;gap:12px;padding:10px;border:1px solid var(--gray-200);border-radius:var(--radius-sm);margin-bottom:8px;">
+          <img src="${item.image||'../assets/images/placeholder.jpg'}" style="width:48px;height:48px;border-radius:6px;object-fit:cover;" onerror="this.src='../assets/images/placeholder.jpg'">
+          <div style="flex:1;"><div style="font-weight:600;font-size:0.9rem;">${item.name}</div><div style="font-size:0.8rem;color:var(--gray-600);">Qty: ${item.qty}</div></div>
+          <div style="font-weight:700;color:var(--pink);">₹${((item.price||0)*(item.qty||1)).toLocaleString('en-IN')}</div>
+        </div>`).join('')}
+      </div>
+      <div style="border-top:1px solid var(--gray-200);padding-top:14px;">
+        <div style="display:flex;justify-content:space-between;font-size:0.88rem;padding:4px 0;"><span>Subtotal</span><span>₹${(o.subtotal||0).toLocaleString('en-IN')}</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:0.88rem;padding:4px 0;"><span>Shipping</span><span>${o.shipping===0?'<span style="color:#059669;">FREE</span>':'₹'+o.shipping}</span></div>
+        <div style="display:flex;justify-content:space-between;font-weight:700;font-size:1rem;padding:10px 0 0;border-top:1px solid var(--gray-200);margin-top:6px;"><span>Total</span><span style="color:var(--pink);">₹${(o.total||0).toLocaleString('en-IN')}</span></div>
+      </div>`;
+    openModal('orderModal');
+  };
+
+  window.waContact = () => {
+    if (!viewingOrder) return;
+    const o = viewingOrder;
+    const phone = (o.customer?.phone||'919384845814').replace(/[^0-9]/g,'');
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent('Hello '+o.customer?.name+'! Regarding your SP GlowPetals order #'+o.id.slice(-8).toUpperCase()+'.')}`, '_blank');
+  };
+
+  window.closeModal = (id) => { document.getElementById(id)?.classList.remove('open'); };
+
+  await init();
+</script>
+</body>
+</html>

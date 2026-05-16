@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wishlist – SP GlowPetals</title>
+  <link rel="icon" type="image/jpeg" href="../assets/images/ti.jpeg">
+  <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+  <div id="navbar"></div>
+  <div style="background:var(--pink-pale);padding:40px 0;border-bottom:1px solid var(--pink-light);">
+    <div class="container">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span>/</span><span class="current">Wishlist</span></div>
+      <h1 style="font-size:2rem;">My Wishlist</h1>
+    </div>
+  </div>
+  <section class="section">
+    <div class="container">
+      <div id="wishlistContent" class="products-grid">
+        <div style="grid-column:1/-1;text-align:center;padding:40px;">Loading…</div>
+      </div>
+    </div>
+  </section>
+  <div id="footer"></div>
+  <a href="https://wa.me/919384845814" target="_blank" class="whatsapp-float"><div class="whatsapp-pulse"></div><span>💬</span></a>
+  <script type="module">
+    import { renderNavbar, renderFooter, Wishlist, Cart, productCardHTML, bindProductCardEvents, showToast } from '../assets/js/components.js';
+    renderNavbar('');renderFooter();
+    const items = Wishlist.get();
+    const el = document.getElementById('wishlistContent');
+    if (!items.length) {
+      el.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">❤️</div><h3>Your wishlist is empty</h3><p>Save your favourite gifts here!</p><a href="../pages/shop.html" class="btn btn-primary">Browse Gifts ✦</a></div>`;
+    } else {
+      el.innerHTML = items.map(p => productCardHTML(p)).join('');
+      bindProductCardEvents(el, items);
+    }
+  </script>
+</body>
+</html>
