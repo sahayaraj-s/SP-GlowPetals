@@ -8,6 +8,46 @@
   <link rel="icon" type="image/jpeg" href="assets/images/ti.jpeg">
   <link rel="stylesheet" href="assets/css/main.css">
   <style>
+    /* Instagram Image Box */
+.insta-item {
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 20px;
+  background: white;
+  position: relative;
+  cursor: pointer;
+
+  /* OUTLINE */
+  border: 3px solid #ffd6e7;
+
+  /* SHADOW */
+  box-shadow:
+    0 8px 20px rgba(255, 79, 139, 0.15);
+
+  padding: 10px;
+  transition: all 0.4s ease;
+}
+
+/* Image Fit */
+.insta-item img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:16px;
+  transition:transform 0.4s ease;
+}
+
+/* Hover Effect */
+.insta-item:hover{
+  transform:translateY(-6px);
+  border-color:#ff4f8b;
+  box-shadow:
+    0 12px 30px rgba(255,79,139,0.28);
+}
+
+.insta-item:hover img{
+  transform:scale(1.05);
+}
     /* ---- Surprise Gift Section ---- */
     .surprise-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:24px; }
     .surprise-card {
@@ -262,21 +302,21 @@
   <section class="section-sm">
     <div class="container">
       <div class="section-header">
-        <span class="tag">@spglowpetals</span>
+        <span class="tag">@sp_glowpetals</span>
         <h2>Follow Us on Instagram</h2>
         <p>Tag us in your unboxing moments & get featured!</p>
         <div class="divider"></div>
       </div>
       <div class="insta-grid">
-        <div class="insta-item" style="background:linear-gradient(135deg,#ffd6e7,#ffb3d1);display:flex;align-items:center;justify-content:center;font-size:2.5rem;">🕯️<div class="insta-overlay">❤️</div></div>
-        <div class="insta-item" style="background:linear-gradient(135deg,#f3e8ff,#ddd6fe);display:flex;align-items:center;justify-content:center;font-size:2.5rem;">🌹<div class="insta-overlay">❤️</div></div>
-        <div class="insta-item" style="background:linear-gradient(135deg,#ecfdf5,#a7f3d0);display:flex;align-items:center;justify-content:center;font-size:2.5rem;">🎁<div class="insta-overlay">❤️</div></div>
-        <div class="insta-item" style="background:linear-gradient(135deg,#fff7ed,#fed7aa);display:flex;align-items:center;justify-content:center;font-size:2.5rem;">💕<div class="insta-overlay">❤️</div></div>
-        <div class="insta-item" style="background:linear-gradient(135deg,#fef9ec,#fde68a);display:flex;align-items:center;justify-content:center;font-size:2.5rem;">🎀<div class="insta-overlay">❤️</div></div>
-        <div class="insta-item" style="background:linear-gradient(135deg,#ffe4e6,#fecdd3);display:flex;align-items:center;justify-content:center;font-size:2.5rem;">🍫<div class="insta-overlay">❤️</div></div>
+        <div class="insta-item" style="background:linear-gradient(135deg,#ffd6e7,#ffb3d1);display:flex;align-items:center;justify-content:center;font-size:2.5rem;"><img src="/assets/images/in1.jpeg" alt="post1"><div class="insta-overlay">❤️</div></div>
+        <div class="insta-item" style="background:linear-gradient(135deg,#f3e8ff,#ddd6fe);display:flex;align-items:center;justify-content:center;font-size:2.5rem;"><img src="/assets/images/in2.jpeg" alt="post2"><div class="insta-overlay">❤️</div></div>
+        <div class="insta-item" style="background:linear-gradient(135deg,#ecfdf5,#a7f3d0);display:flex;align-items:center;justify-content:center;font-size:2.5rem;"><img src="/assets/images/in3.jpeg" alt="post3"><div class="insta-overlay">❤️</div></div>
+        <div class="insta-item" style="background:linear-gradient(135deg,#fff7ed,#fed7aa);display:flex;align-items:center;justify-content:center;font-size:2.5rem;"><img src="/assets/images/in4.jpeg" alt="post4"><div class="insta-overlay">❤️</div></div>
+        <div class="insta-item" style="background:linear-gradient(135deg,#fef9ec,#fde68a);display:flex;align-items:center;justify-content:center;font-size:2.5rem;"><img src="/assets/images/in5.jpeg" alt="post5"><div class="insta-overlay">❤️</div></div>
+        <div class="insta-item" style="background:linear-gradient(135deg,#ffe4e6,#fecdd3);display:flex;align-items:center;justify-content:center;font-size:2.5rem;"><img src="/assets/images/in6.jpeg" alt="post6"><div class="insta-overlay">❤️</div></div>
       </div>
       <div class="text-center" style="margin-top:24px;">
-        <a href="https://instagram.com/spglowpetals" target="_blank" class="btn btn-outline">Follow @spglowpetals ✦</a>
+        <a href="https://www.instagram.com/sp_glowpetals?igsh=MWwzcW1oc3BrODI4ZQ==" target="_blank" class="btn btn-outline">Follow @spglowpetals</a>
       </div>
     </div>
   </section>
