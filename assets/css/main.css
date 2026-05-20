@@ -671,32 +671,257 @@ p { line-height: 1.7; }
   background-repeat: no-repeat; background-position: right 14px center;
 }
 .form-select:focus { border-color: var(--pink); }
+/* WHY GLOWPETALS DESKTOP */
+
+.why-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:24px;
+}
+
+.why-card{
+  padding:32px 24px !important;
+  border-radius:24px;
+}
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1024px) {
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .hero-content { padding-left: 40px; }
   .testimonial-card { flex: 0 0 calc(50% - 16px); }
+  
 }
 @media (max-width: 768px) {
-  .navbar-nav, .nav-dropdown { display: none; }
-  .hamburger { display: flex; }
-  .section { padding: 55px 0; }
-  .hero-slider { height: 70vh; }
-  .hero-content { padding: 0 20px; max-width: 100%; }
-  .hero-content h1 { font-size: 2rem; }
-  .hero-actions { flex-direction: column; }
-  .footer-grid { grid-template-columns: 1fr; gap: 30px; }
-  .testimonial-card { flex: 0 0 calc(100% - 16px); }
-  .countdown-wrap { gap: 10px; }
-  .countdown-num { font-size: 2rem; }
-  .countdown-box { padding: 14px 16px; min-width: 60px; }
-  .products-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
-  .categories-grid { grid-template-columns: repeat(3, 1fr); }
-  .newsletter-form { flex-direction: column; border-radius: var(--radius-md); }
-  .newsletter-input { border-radius: var(--radius-md); }
-  .newsletter-btn { border-radius: var(--radius-md); padding: 14px; }
-  .form-row { grid-template-columns: 1fr; }
+
+  /* =========================
+     NAVBAR MOBILE FIX
+  ========================== */
+
+  .navbar-inner{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 14px;
+    height:70px;
+  }
+
+  .navbar-brand{
+    flex:1;
+  }
+
+  .navbar-actions{
+    margin-left:auto;
+    display:flex;
+    align-items:center;
+    gap:4px;
+  }
+
+  .navbar-nav,
+  .nav-dropdown{
+    display:none;
+  }
+
+  .hamburger{
+    display:flex;
+    margin-left:0;
+  }
+
+  .nav-icon{
+    width:36px;
+    height:36px;
+  }
+
+  /* =========================
+     FOOTER MOBILE LANDSCAPE
+  ========================== */
+
+  .footer-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:24px;
+    align-items:flex-start;
+  }
+
+  .footer{
+    padding:50px 0 0;
+  }
+
+  .footer-title{
+    margin-bottom:12px;
+  }
+
+  .footer-links{
+    gap:8px;
+  }
+
+  .footer-brand p{
+    font-size:0.85rem;
+    line-height:1.5;
+  }
+
+  /* =========================
+     EXISTING MOBILE STYLES
+  ========================== */
+
+  .section{
+    padding:55px 0;
+  }
+
+  .hero-slider{
+    height:70vh;
+  }
+
+  .hero-content{
+    padding:0 20px;
+    max-width:100%;
+  }
+
+  .hero-content h1{
+    font-size:2rem;
+  }
+
+  .hero-actions{
+    flex-direction:column;
+  }
+
+  .testimonial-card{
+    flex:0 0 calc(100% - 16px);
+  }
+
+  .countdown-wrap{
+    gap:10px;
+  }
+
+  .countdown-num{
+    font-size:2rem;
+  }
+
+  .countdown-box{
+    padding:14px 16px;
+    min-width:60px;
+  }
+
+  .products-grid{
+    grid-template-columns:repeat(2, 1fr);
+    gap:14px;
+  }
+
+  .categories-grid{
+    grid-template-columns:repeat(3, 1fr);
+  }
+
+  .newsletter-form{
+    flex-direction:column;
+    border-radius:var(--radius-md);
+  }
+
+  .newsletter-input{
+    border-radius:var(--radius-md);
+  }
+
+  .newsletter-btn{
+    border-radius:var(--radius-md);
+    padding:14px;
+  }
+
+  .form-row{
+    grid-template-columns:1fr;
+  }
+  /* =========================
+   MOBILE HERO BANNER FIX
+========================= */
+
+.hero-slider{
+  height:52vh;
+  min-height:420px;
+}
+
+.hero-slide{
+  background-size:cover !important;
+  background-position:center !important;
+}
+
+.hero-content{
+  padding:0 22px !important;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  height:100%;
+}
+
+.hero-content .tag{
+  font-size:0.72rem;
+  padding:6px 14px;
+  margin-bottom:14px;
+}
+
+.hero-content h1{
+  font-size:2.4rem;
+  line-height:1.05;
+  margin-bottom:14px;
+}
+
+.hero-content p{
+  font-size:0.95rem;
+  line-height:1.6;
+  margin-bottom:22px;
+  max-width:100%;
+}
+
+.hero-actions{
+  width:100%;
+  gap:12px;
+}
+
+.hero-actions .btn{
+  width:100%;
+  justify-content:center;
+  padding:15px 18px;
+}
+
+.hero-arrow{
+  width:44px;
+  height:44px;
+}
+
+.hero-arrow.prev{
+  left:10px;
+}
+
+.hero-arrow.next{
+  right:10px;
+}
+
+/* =========================
+   WHY GLOWPETALS MOBILE
+========================= */
+
+.why-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+}
+
+.why-card{
+  padding:22px 16px !important;
+  border-radius:20px;
+}
+
+.why-card h4{
+  font-size:1rem;
+  margin-bottom:8px !important;
+}
+
+.why-card p{
+  font-size:0.78rem !important;
+  line-height:1.5;
+}
+
+.why-card div:first-child{
+  font-size:2rem !important;
+  margin-bottom:12px !important;
+}
+  
 }
 @media (max-width: 480px) {
   .products-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
