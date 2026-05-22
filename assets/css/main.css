@@ -912,6 +912,7 @@ p { line-height: 1.7; }
 .hero-dot.active{
   width:18px;
 }
+
 /* =========================
    MOBILE OVERFLOW FIX
 ========================= */
@@ -961,6 +962,15 @@ img{
   max-width:100%;
   height:auto;
 }
+/* Hide only Featured & Trending badges on mobile */
 
+@media (max-width:768px){
+
+  .badge-featured,
+  .badge-trending{
+    display:none !important;
+  }
+
+}
 }
 
