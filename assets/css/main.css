@@ -971,4 +971,11 @@ img{
 }
 
 }
+/* FORCE HIDE BADGES ON MOBILE */
+@media (max-width:768px){
 
+  .product-badges{
+    display:none !important;
+  }
+
+}
