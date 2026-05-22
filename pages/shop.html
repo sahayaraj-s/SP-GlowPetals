@@ -6,6 +6,7 @@
   <title>Shop – SP GlowPetals</title>
   <link rel="icon" type="image/jpeg" href="../assets/images/ti.jpeg">
   <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     .shop-layout { display:grid; grid-template-columns:260px 1fr; gap:28px; align-items:start; }
     .filter-sidebar { background:white; border-radius:var(--radius-lg); border:1px solid var(--gray-200); padding:24px; position:sticky; top:90px; }
@@ -73,15 +74,9 @@
           <div class="filter-section">
             <div class="filter-label">Categories</div>
             <div id="catFilters">
-              <label class="filter-option"><input type="checkbox" value="candles" onchange="applyFilters()">🕯️ Gift Candles</label>
-              <label class="filter-option"><input type="checkbox" value="flowers" onchange="applyFilters()">🌹 Flowers</label>
-              <label class="filter-option"><input type="checkbox" value="surprise-boxes" onchange="applyFilters()">🎁 Surprise Boxes</label>
-              <label class="filter-option"><input type="checkbox" value="romantic" onchange="applyFilters()">💕 Romantic Gifts</label>
-              <label class="filter-option"><input type="checkbox" value="personalized" onchange="applyFilters()">✨ Personalized</label>
-              <label class="filter-option"><input type="checkbox" value="teddy" onchange="applyFilters()">🧸 Teddy Bears</label>
-              <label class="filter-option"><input type="checkbox" value="chocolates" onchange="applyFilters()">🍫 Chocolates</label>
-              <label class="filter-option"><input type="checkbox" value="hampers" onchange="applyFilters()">🎀 Hampers</label>
-              <label class="filter-option"><input type="checkbox" value="premium" onchange="applyFilters()">👑 Premium Gifts</label>
+              <div style="color:var(--gray-400);font-size:0.8rem;padding:4px 0;">
+                <i class="fa-solid fa-spinner fa-spin"></i> Loading…
+              </div>
             </div>
           </div>
           <div class="filter-section">
@@ -134,13 +129,13 @@
   </section>
 
   <div id="footer"></div>
-  <a href="https://wa.me/919384845814" target="_blank" class="whatsapp-float"><div class="whatsapp-pulse"></div><span>💬</span></a>
+  <a href="https://wa.me/919384845814" target="_blank" class="whatsapp-float"><div class="whatsapp-pulse"></div><i class="fa-brands fa-whatsapp" style="font-size:1.6rem;color:white;"></i></a>
 
   <script type="module">
     import { renderNavbar, renderFooter, productCardHTML, bindProductCardEvents, showLoader, hideLoader, renderSearch } from '../assets/js/components.js';
-    import { getProducts } from '../assets/js/firebase.js';
+    import { getProducts, listenCategories } from '../assets/js/firebase.js';
 
-    renderNavbar('shop'); renderFooter();
+    await renderNavbar('shop'); renderFooter();
 
     let allProducts = []; let filtered = []; let currentPage = 1; const perPage = 12;
     let currentView = 'grid';
@@ -165,6 +160,33 @@
       try {
         allProducts = await getProducts({});
         renderSearch(allProducts);
+
+        // Populate category filters from Firebase (real-time)
+        listenCategories((cats) => {
+          const catBox = document.getElementById('catFilters');
+          if (!catBox) return;
+          const active = cats.filter(c => c.active !== false);
+          if (!active.length) {
+            catBox.innerHTML = '<div style="color:var(--gray-400);font-size:0.8rem;padding:4px 0;">No categories yet</div>';
+            return;
+          }
+          // Preserve checked state
+          const checked = new Set([...catBox.querySelectorAll('input:checked')].map(i => i.value));
+          catBox.innerHTML = active.map(cat =>
+            `<label class="filter-option">
+              <input type="checkbox" value="${cat.slug || cat.id}" onchange="applyFilters()"
+                ${checked.has(cat.slug || cat.id) ? 'checked' : ''}>
+              <i class="fa-solid ${cat.icon && cat.icon.startsWith('fa-') ? cat.icon : 'fa-tag'}" style="color:var(--pink);font-size:0.75em;margin-right:4px;"></i>
+              ${cat.name}
+            </label>`
+          ).join('');
+          // Re-apply URL param check
+          if (catParam) {
+            const cb = catBox.querySelector(`input[value="${catParam}"]`);
+            if (cb && !cb.checked) { cb.checked = true; applyFilters(); }
+          }
+        });
+
         applyFilters();
       } catch(e) { console.error(e); document.getElementById('productsContainer').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;">Failed to load products. <a href="#" onclick="location.reload()">Retry</a></div>`; }
       finally { hideLoader(); }
@@ -200,11 +222,11 @@
     function renderActiveFilters(cats, maxPrice, feat, trend, sale) {
       const el = document.getElementById('activeFilters');
       let html = '';
-      cats.forEach(c => { html += `<span class="filter-tag">${c} <button onclick="removeCatFilter('${c}')">✕</button></span>`; });
-      if (maxPrice < 5000) html += `<span class="filter-tag">Under ₹${maxPrice} <button onclick="resetPrice()">✕</button></span>`;
-      if (feat) html += `<span class="filter-tag">Featured <button onclick="resetFeat()">✕</button></span>`;
-      if (trend) html += `<span class="filter-tag">Trending <button onclick="resetTrend()">✕</button></span>`;
-      if (sale) html += `<span class="filter-tag">On Sale <button onclick="resetSale()">✕</button></span>`;
+      cats.forEach(c => { html += `<span class="filter-tag">${c} <button onclick="removeCatFilter('${c}')" aria-label="Remove"><i class="fa-solid fa-xmark"></i></button></span>`; });
+      if (maxPrice < 5000) html += `<span class="filter-tag">Under ₹${maxPrice} <button onclick="resetPrice()"><i class="fa-solid fa-xmark"></i></button></span>`;
+      if (feat) html += `<span class="filter-tag">Featured <button onclick="resetFeat()"><i class="fa-solid fa-xmark"></i></button></span>`;
+      if (trend) html += `<span class="filter-tag">Trending <button onclick="resetTrend()"><i class="fa-solid fa-xmark"></i></button></span>`;
+      if (sale) html += `<span class="filter-tag">On Sale <button onclick="resetSale()"><i class="fa-solid fa-xmark"></i></button></span>`;
       el.innerHTML = html;
     }
 
@@ -224,7 +246,7 @@
       const page = filtered.slice(start, start + perPage);
       const el = document.getElementById('productsContainer');
       document.getElementById('resultsCount').textContent = `Showing ${filtered.length} product${filtered.length !== 1 ? 's' : ''}`;
-      if (!filtered.length) { el.className = ''; el.innerHTML = `<div class="no-products"><div style="font-size:4rem">🔍</div><h3>No products found</h3><p>Try adjusting your filters.</p><button class="btn btn-primary" onclick="clearAllFilters()">Clear Filters</button></div>`; document.getElementById('pagination').innerHTML = ''; return; }
+      if (!filtered.length) { el.className = ''; el.innerHTML = `<div class="no-products"><div style="font-size:2.5rem"><i class="fa-solid fa-magnifying-glass" style="color:var(--pink);opacity:0.4;"></i></div><h3>No products found</h3><p>Try adjusting your filters.</p><button class="btn btn-primary" onclick="clearAllFilters()">Clear Filters</button></div>`; document.getElementById('pagination').innerHTML = ''; return; }
       el.className = currentView === 'grid' ? 'products-grid' : 'list-view';
       el.innerHTML = page.map(p => productCardHTML(p)).join('');
       bindProductCardEvents(el, page);

@@ -9,282 +9,201 @@
 </head>
 <body>
 <script type="module">
-  import { requireAuth, renderAdminShell, adminToast, openModal, closeModal, confirmDelete } from './admin-shell.js';
-  import { getCategories, addCategory, updateCategory, deleteCategory, uploadImage } from '../assets/js/firebase.js';
+  import { requireAuth, renderAdminShell, adminToast, openModal, closeModal } from './admin-shell.js';
+  import { getCategories, addCategory, updateCategory, deleteCategory, uploadImage, listenCategories } from '../assets/js/firebase.js';
 
   await requireAuth();
   renderAdminShell('categories', 'Category Management');
 
   let allCats = [], editingId = null, uploadedImageUrl = '';
 
-  async function init() {
-    document.getElementById('adminContent').innerHTML = '<div style="text-align:center;padding:60px;color:var(--gray-600)">Loading…</div>';
-    allCats = await getCategories();
-    renderPage();
+  // Use real-time listener so table stays in sync across tabs
+  function startListener() {
+    listenCategories((cats) => {
+      allCats = cats;
+      renderTable();
+    });
   }
 
- function renderPage() {
-
-  document.getElementById('adminContent').innerHTML = `
-
-  <!-- Modal -->
-  <div class="modal-overlay" id="catModal">
-
-    <div class="modal">
-
-      <div class="modal-header">
-
-        <div class="modal-title" id="catModalTitle">
-          Add Category
+  function renderPage() {
+    document.getElementById('adminContent').innerHTML = `
+    <!-- Add/Edit Modal -->
+    <div class="modal-overlay" id="catModal">
+      <div class="modal">
+        <div class="modal-header">
+          <div class="modal-title" id="catModalTitle">Add Category</div>
+          <button class="modal-close" onclick="closeModal('catModal')">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
         </div>
-
-        <button class="modal-close"
-          onclick="closeModal('catModal')">
-          ✕
-        </button>
-
-      </div>
-
-      <div class="modal-body">
-
-        <div class="form-row">
-
-          <div class="form-group">
-            <label class="form-label">
-              Category Name <span>*</span>
-            </label>
-
-            <input class="form-control"
-              id="cName"
-              placeholder="Gift Candles">
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Category Name <span>*</span></label>
+              <input class="form-control" id="cName" placeholder="e.g. Gift Candles">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Slug</label>
+              <input class="form-control" id="cSlug" placeholder="e.g. candles">
+            </div>
           </div>
-
-          <div class="form-group">
-            <label class="form-label">
-              Slug
-            </label>
-
-            <input class="form-control"
-              id="cSlug"
-              placeholder="candles">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Icon Class <small style="font-weight:400;color:var(--gray-500)">(FA class e.g. fa-gift)</small></label>
+              <input class="form-control" id="cIcon" placeholder="fa-gift">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Sort Order</label>
+              <input class="form-control" id="cSort" type="number" placeholder="1">
+            </div>
           </div>
-
-        </div>
-
-        <div class="form-row">
-
           <div class="form-group">
-            <label class="form-label">
-              Icon
-            </label>
-
-            <input class="form-control"
-              id="cIcon"
-              placeholder="🕯️">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" id="cDesc" rows="2" placeholder="Short description…"></textarea>
           </div>
-
           <div class="form-group">
-            <label class="form-label">
-              Sort Order
-            </label>
-
-            <input class="form-control"
-              id="cSort"
-              type="number">
+            <label class="form-label">Category Image</label>
+            <div class="upload-area" onclick="document.getElementById('catImgInput').click()" style="cursor:pointer;">
+              <i class="fa-solid fa-cloud-arrow-up" style="font-size:1.5rem;color:var(--pink);margin-bottom:6px;"></i>
+              <div>Click to upload image</div>
+            </div>
+            <input type="file" id="catImgInput" accept="image/*" style="display:none" onchange="handleCatImg(this)">
+            <div id="catImgPreview" style="margin-top:10px;"></div>
+            <div id="catUploadStatus" style="margin-top:6px;font-size:0.85rem;"></div>
           </div>
-
-        </div>
-
-        <div class="form-group">
-
-          <label class="form-label">
-            Description
+          <label style="display:flex;gap:10px;align-items:center;cursor:pointer;">
+            <input type="checkbox" id="cActive" checked style="accent-color:var(--pink);width:16px;height:16px;">
+            <span>Active (visible on site)</span>
           </label>
-
-          <textarea class="form-control"
-            id="cDesc"></textarea>
-
         </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal('catModal')">Cancel</button>
+          <button class="btn btn-primary" id="saveCatBtn" onclick="saveCat()">
+            <i class="fa-solid fa-floppy-disk"></i> Save Category
+          </button>
+        </div>
+      </div>
+    </div>
 
-        <div class="form-group">
-
-          <label class="form-label">
-            Category Image
-          </label>
-
-          <div class="upload-area"
-            onclick="document.getElementById('catImgInput').click()">
-
-            Click to Upload
-
+    <!-- Delete Confirm Modal -->
+    <div class="modal-overlay" id="deleteModal">
+      <div class="modal" style="max-width:420px;">
+        <div class="modal-header">
+          <div class="modal-title" style="color:#dc2626;">
+            <i class="fa-solid fa-triangle-exclamation"></i> Delete Category
           </div>
-
-          <input
-            type="file"
-            id="catImgInput"
-            accept="image/*"
-            style="display:none"
-            onchange="handleCatImg(this)">
-
-          <div id="catImgPreview"></div>
-
-          <div id="catUploadStatus"></div>
-
+          <button class="modal-close" onclick="closeModal('deleteModal')">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
         </div>
-
-        <label style="display:flex;gap:10px;align-items:center;">
-
-          <input type="checkbox"
-            id="cActive"
-            checked>
-
-          Active
-
-        </label>
-
+        <div class="modal-body">
+          <p style="color:var(--gray-700);margin-bottom:8px;">
+            Are you sure you want to permanently delete
+            <strong id="deleteCatName"></strong>?
+          </p>
+          <p style="font-size:0.85rem;color:#dc2626;">
+            <i class="fa-solid fa-circle-info"></i>
+            This will remove the category from admin, shop, navbar, and all category listings instantly.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal('deleteModal')">Cancel</button>
+          <button class="btn btn-danger" id="confirmDeleteBtn" onclick="executeDelete()">
+            <i class="fa-solid fa-trash"></i> Delete Permanently
+          </button>
+        </div>
       </div>
+    </div>
 
-      <div class="modal-footer">
-
-        <button class="btn btn-secondary"
-          onclick="closeModal('catModal')">
-
-          Cancel
-
+    <!-- Categories Table Card -->
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <div class="admin-card-title" id="catCountTitle">Store Categories</div>
+        <button class="btn btn-primary btn-sm" onclick="openAddCat()">
+          <i class="fa-solid fa-plus"></i> Add Category
         </button>
-
-        <button class="btn btn-primary"
-          id="saveCatBtn"
-          onclick="saveCat()">
-
-          Save
-
-        </button>
-
       </div>
-
-    </div>
-
-  </div>
-
-  <!-- Categories Table -->
-
-  <div class="admin-card">
-
-    <div class="admin-card-header">
-
-      <div class="admin-card-title">
-        Store Categories (${allCats.length})
+      <div class="admin-card-body" style="padding:0;">
+        <div id="catTableWrap">
+          <div style="text-align:center;padding:48px;color:var(--gray-500);">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem;"></i>
+            <div style="margin-top:8px;">Loading categories from Firebase…</div>
+          </div>
+        </div>
       </div>
+    </div>`;
 
-      <button class="btn btn-primary btn-sm"
-        onclick="openAddCat()">
+    // Start real-time listener after DOM is ready
+    startListener();
+  }
 
-        <i class="fa fa-plus"></i>
-        Add
+  function renderTable() {
+    const wrap = document.getElementById('catTableWrap');
+    const titleEl = document.getElementById('catCountTitle');
+    if (!wrap) return;
+    if (titleEl) titleEl.textContent = `Store Categories (${allCats.length})`;
 
-      </button>
+    if (!allCats.length) {
+      wrap.innerHTML = `
+        <div style="text-align:center;padding:60px;color:var(--gray-500);">
+          <i class="fa-solid fa-folder-open" style="font-size:2.5rem;margin-bottom:12px;color:var(--pink);opacity:0.5;"></i>
+          <div style="font-size:1rem;font-weight:600;margin-bottom:6px;">No categories yet</div>
+          <div style="font-size:0.85rem;">Click "Add Category" to create your first category.</div>
+        </div>`;
+      return;
+    }
 
-    </div>
+    wrap.innerHTML = `
+    <div class="table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Icon</th>
+            <th>Name</th>
+            <th>Slug</th>
+            <th>Status</th>
+            <th style="text-align:right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${allCats.map(c => `
+          <tr>
+            <td>
+              <span style="width:38px;height:38px;border-radius:50%;background:var(--pink-pale);display:inline-flex;align-items:center;justify-content:center;">
+                <i class="fa-solid ${c.icon || 'fa-tag'}" style="color:var(--pink);font-size:0.95rem;"></i>
+              </span>
+            </td>
+            <td style="font-weight:600;color:var(--text-dark);">${c.name}</td>
+            <td style="font-family:monospace;font-size:0.85rem;color:var(--gray-600);">${c.slug || c.id}</td>
+            <td>
+              <span class="status-badge ${c.active !== false ? 'status-active' : 'status-inactive'}">
+                ${c.active !== false ? 'Active' : 'Inactive'}
+              </span>
+            </td>
+            <td style="text-align:right;">
+              <div class="action-btns" style="justify-content:flex-end;">
+                <button class="action-btn action-btn-edit" onclick="openEditCat('${c.id}')" title="Edit">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="action-btn action-btn-delete" onclick="showDeleteConfirm('${c.id}','${c.name.replace(/'/g,"\\'")}' )" title="Delete">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+  }
 
-    <div class="admin-card-body" style="padding:0">
-
-      <div class="table-wrap">
-
-        <table class="admin-table">
-
-          <thead>
-
-            <tr>
-              <th>Icon</th>
-              <th>Name</th>
-              <th>Slug</th>
-              <th>Status</th>
-              <th>Type</th>
-              <th>Actions</th>
-            </tr>
-
-          </thead>
-
-          <tbody>
-
-            ${allCats.map(c => `
-
-            <tr>
-
-              <td style="font-size:1.4rem">
-                ${c.icon || '📦'}
-              </td>
-
-              <td>
-                ${c.name}
-              </td>
-
-              <td>
-                ${c.slug}
-              </td>
-
-              <td>
-
-                <span class="status-badge ${c.active !== false ? 'status-active' : 'status-inactive'}">
-
-                  ${c.active !== false ? 'Active' : 'Inactive'}
-
-                </span>
-
-              </td>
-
-              <td>
-
-                ${c.builtIn ? 'Built-in' : 'Custom'}
-
-              </td>
-
-              <td>
-
-                <div class="action-btns">
-
-                  <button
-                    class="action-btn action-btn-edit"
-                    onclick="openEditCat('${c.id}')">
-
-                    <i class="fa fa-edit"></i>
-
-                  </button>
-
-                  <button
-                    class="action-btn action-btn-delete"
-                    onclick="deleteCatItem('${c.id}','${c.name}')">
-
-                    <i class="fa fa-trash"></i>
-
-                  </button>
-
-                </div>
-
-              </td>
-
-            </tr>
-
-            `).join('')}
-
-          </tbody>
-
-        </table>
-
-      </div>
-
-    </div>
-
-  </div>
-
-  `;
-}
-
+  // ── Add / Edit ──────────────────────────────────────────────────
   window.openAddCat = () => {
     editingId = null; uploadedImageUrl = '';
     document.getElementById('catModalTitle').textContent = 'Add Category';
-    ['cName','cSlug','cIcon','cSort','cDesc'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+    ['cName','cSlug','cIcon','cSort','cDesc'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
     document.getElementById('cActive').checked = true;
     document.getElementById('catImgPreview').innerHTML = '';
     document.getElementById('catUploadStatus').textContent = '';
@@ -294,66 +213,112 @@
   window.openEditCat = (id) => {
     const c = allCats.find(x => x.id === id);
     if (!c) return;
-    editingId = id; uploadedImageUrl = c.image || '';
+    editingId = id;
+    uploadedImageUrl = c.image || '';
     document.getElementById('catModalTitle').textContent = 'Edit Category';
-    document.getElementById('cName').value   = c.name || '';
-    document.getElementById('cSlug').value   = c.slug || '';
-    document.getElementById('cIcon').value   = c.icon || '';
-    document.getElementById('cSort').value   = c.sort || '';
-    document.getElementById('cDesc').value   = c.description || '';
+    document.getElementById('cName').value  = c.name || '';
+    document.getElementById('cSlug').value  = c.slug || '';
+    document.getElementById('cIcon').value  = c.icon || '';
+    document.getElementById('cSort').value  = c.sort || '';
+    document.getElementById('cDesc').value  = c.description || '';
     document.getElementById('cActive').checked = c.active !== false;
     document.getElementById('catImgPreview').innerHTML = uploadedImageUrl
-      ? `<div class="preview-img-wrap"><img src="${uploadedImageUrl}" alt="Category image"><button class="preview-remove" onclick="clearCatImg()">✕</button></div>`
+      ? `<div class="preview-img-wrap"><img src="${uploadedImageUrl}" alt="Category image" style="max-height:120px;border-radius:8px;"><button class="preview-remove" onclick="clearCatImg()"><i class="fa-solid fa-xmark"></i></button></div>`
       : '';
-    document.getElementById('catUploadStatus').textContent = uploadedImageUrl ? '✅ Current image loaded' : '';
+    document.getElementById('catUploadStatus').textContent = uploadedImageUrl ? 'Current image loaded' : '';
     openModal('catModal');
   };
 
-  window.clearCatImg = () => { uploadedImageUrl=''; document.getElementById('catImgPreview').innerHTML=''; document.getElementById('catUploadStatus').textContent=''; };
+  window.clearCatImg = () => {
+    uploadedImageUrl = '';
+    document.getElementById('catImgPreview').innerHTML = '';
+    document.getElementById('catUploadStatus').textContent = '';
+  };
 
   window.handleCatImg = async (input) => {
     const file = input.files?.[0];
     if (!file) return;
     const status = document.getElementById('catUploadStatus');
-    status.textContent = '⏳ Uploading to Cloudinary…'; status.style.color='var(--gray-600)';
+    status.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Uploading to Cloudinary…';
+    status.style.color = 'var(--gray-600)';
     try {
-      uploadedImageUrl = await uploadImage(file);
-      document.getElementById('catImgPreview').innerHTML = `<div class="preview-img-wrap"><img src="${uploadedImageUrl}" alt="Uploaded"><button class="preview-remove" onclick="clearCatImg()">✕</button></div>`;
-      status.textContent = '✅ Uploaded!'; status.style.color='var(--success)';
-    } catch(e) { status.textContent = `❌ ${e.message}`; status.style.color='var(--danger)'; }
+      uploadedImageUrl = await uploadImage(file, { folder: 'categories' });
+      document.getElementById('catImgPreview').innerHTML =
+        `<div class="preview-img-wrap"><img src="${uploadedImageUrl}" alt="Uploaded" style="max-height:120px;border-radius:8px;"><button class="preview-remove" onclick="clearCatImg()"><i class="fa-solid fa-xmark"></i></button></div>`;
+      status.innerHTML = '<i class="fa-solid fa-circle-check" style="color:var(--success)"></i> Uploaded successfully!';
+      status.style.color = 'var(--success)';
+    } catch (e) {
+      status.innerHTML = `<i class="fa-solid fa-circle-xmark" style="color:var(--danger)"></i> ${e.message}`;
+      status.style.color = 'var(--danger)';
+    }
   };
 
   window.saveCat = async () => {
     const name = document.getElementById('cName').value.trim();
     if (!name) { adminToast('Category name is required', 'error'); return; }
-    const slug = document.getElementById('cSlug').value.trim() || name.toLowerCase().replace(/\s+/g,'-');
+    const slug = document.getElementById('cSlug').value.trim() || name.toLowerCase().replace(/\s+/g, '-');
     const btn  = document.getElementById('saveCatBtn');
-    btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Saving…'; btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving…';
+    btn.disabled = true;
     const data = {
       name, slug,
-      icon:        document.getElementById('cIcon').value.trim(),
-      sort:        parseInt(document.getElementById('cSort').value) || 0,
+      icon:        document.getElementById('cIcon').value.trim() || 'fa-tag',
+      sort:        parseInt(document.getElementById('cSort').value) || 99,
       description: document.getElementById('cDesc').value.trim(),
       image:       uploadedImageUrl,
       active:      document.getElementById('cActive').checked,
     };
     try {
-      if (editingId) { await updateCategory(editingId, data); adminToast('Category updated!'); }
-      else           { await addCategory(data);               adminToast('Category added!'); }
+      if (editingId) {
+        await updateCategory(editingId, data);
+        adminToast('Category updated!', 'success');
+      } else {
+        await addCategory(data);
+        adminToast('Category added!', 'success');
+      }
       closeModal('catModal');
-      allCats = await getCategories();
-      renderPage();
-    } catch(e) { adminToast(`Error: ${e.message}`, 'error'); }
-    finally { btn.innerHTML = '<i class="fa fa-save"></i> Save'; btn.disabled = false; }
+      // Table updates automatically via listenCategories
+    } catch (e) {
+      adminToast(`Error: ${e.message}`, 'error');
+    } finally {
+      btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Category';
+      btn.disabled = false;
+    }
   };
 
-  window.deleteCatItem = async (id, name) => {
-    if (!confirmDelete(`Delete category "${name}"?`)) return;
-    try { await deleteCategory(id); adminToast('Deleted'); allCats = await getCategories(); renderPage(); }
-    catch(e) { adminToast(`Error: ${e.message}`, 'error'); }
+  // ── Delete — two-step confirm ────────────────────────────────────
+  let pendingDeleteId = null;
+
+  window.showDeleteConfirm = (id, name) => {
+    pendingDeleteId = id;
+    document.getElementById('deleteCatName').textContent = `"${name}"`;
+    openModal('deleteModal');
   };
 
-  await init();
+  window.executeDelete = async () => {
+    if (!pendingDeleteId) return;
+    const btn = document.getElementById('confirmDeleteBtn');
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Deleting…';
+    btn.disabled = true;
+    try {
+      await deleteCategory(pendingDeleteId);
+      closeModal('deleteModal');
+      adminToast('Category deleted permanently.', 'success');
+      // listenCategories fires → table updates automatically
+    } catch (e) {
+      adminToast(`Delete failed: ${e.message}`, 'error');
+    } finally {
+      btn.innerHTML = '<i class="fa-solid fa-trash"></i> Delete Permanently';
+      btn.disabled = false;
+      pendingDeleteId = null;
+    }
+  };
+
+  // Make closeModal available globally for inline onclick
+  window.closeModal = closeModal;
+  window.openModal  = openModal;
+
+  renderPage();
 </script>
 </body>
 </html>

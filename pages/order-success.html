@@ -6,6 +6,7 @@
   <title>Order Placed! – SP GlowPetals</title>
   <link rel="icon" type="image/jpeg" href="../assets/images/ti.jpeg">
   <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     .success-wrap{min-height:70vh;display:flex;align-items:center;justify-content:center;padding:60px 20px;}
     .success-card{background:white;border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);padding:60px 48px;max-width:560px;width:100%;text-align:center;border:1px solid var(--gray-200);}
@@ -46,7 +47,7 @@
   <div id="footer"></div>
   <script type="module">
     import { renderNavbar, renderFooter } from '../assets/js/components.js';
-    renderNavbar(''); renderFooter();
+    await renderNavbar(''); renderFooter();
     const id = new URLSearchParams(location.search).get('id');
     document.getElementById('orderId').textContent = id ? `#${id.slice(-8).toUpperCase()}` : '#GLOWPETALS';
   </script>

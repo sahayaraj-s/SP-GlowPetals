@@ -148,27 +148,12 @@
         <div class="category-card" onclick="location.href='/pages/shop.html?cat=candles'" style="background:linear-gradient(135deg,#ffd6e7,#ffe0f0)">
           <div class="category-overlay"><div><div class="category-name">🕯️ Gift Candles</div><div class="category-count">View All</div></div></div>
         </div>
-        <div class="category-card" onclick="location.href='/pages/shop.html?cat=flowers'" style="background:linear-gradient(135deg,#fce7f3,#fdd0e8)">
-          <div class="category-overlay"><div><div class="category-name">🌹 Flowers</div><div class="category-count">View All</div></div></div>
-        </div>
-        <div class="category-card" onclick="location.href='/pages/shop.html?cat=surprise-boxes'" style="background:linear-gradient(135deg,#f3e8ff,#ede9fe)">
-          <div class="category-overlay"><div><div class="category-name">🎁 Surprise Boxes</div><div class="category-count">View All</div></div></div>
-        </div>
-        <div class="category-card" onclick="location.href='/pages/shop.html?cat=romantic'" style="background:linear-gradient(135deg,#ffe4e6,#fecdd3)">
-          <div class="category-overlay"><div><div class="category-name">💕 Romantic</div><div class="category-count">View All</div></div></div>
-        </div>
-        <div class="category-card" onclick="location.href='/pages/shop.html?cat=teddy'" style="background:linear-gradient(135deg,#fef3c7,#fde68a)">
-          <div class="category-overlay"><div><div class="category-name">🧸 Teddy Bears</div><div class="category-count">View All</div></div></div>
-        </div>
-        <div class="category-card" onclick="location.href='/pages/shop.html?cat=chocolates'" style="background:linear-gradient(135deg,#fff7ed,#fed7aa)">
-          <div class="category-overlay"><div><div class="category-name">🍫 Chocolates</div><div class="category-count">View All</div></div></div>
-        </div>
-        <div class="category-card" onclick="location.href='/pages/shop.html?cat=hampers'" style="background:linear-gradient(135deg,#ecfdf5,#a7f3d0)">
-          <div class="category-overlay"><div><div class="category-name">🎀 Hampers</div><div class="category-count">View All</div></div></div>
-        </div>
-        <div class="category-card" onclick="location.href='/pages/shop.html?cat=premium'" style="background:linear-gradient(135deg,#fff0f6,#ffd6e7)">
-          <div class="category-overlay"><div><div class="category-name">👑 Premium Gifts</div><div class="category-count">View All</div></div></div>
-        </div>
+      
+       
+
+        
+       
+        
       </div>
     </div>
   </section>
@@ -205,54 +190,6 @@
       <div class="products-grid" id="trendingProducts">
         <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-600);">Loading…</div>
       </div>
-    </div>
-  </section>
-
-
-
-  <!-- Why Choose Us -->
-  <section class="section">
-    <div class="container">
-      <div class="section-header">
-        <span class="tag">Why GlowPetals?</span>
-        <h2>The GlowPetals Promise</h2>
-        <div class="divider"></div>
-      </div>
-      <div class="why-grid">
-
-  <div class="card-glass why-card" style="text-align:center;">
-    <div style="font-size:2.5rem;margin-bottom:16px;">🚀</div>
-    <h4 style="margin-bottom:10px;">Fast Delivery</h4>
-    <p style="font-size:0.88rem;color:var(--gray-600);">
-      Order before 4 PM and receive your gift the 3 day.
-    </p>
-  </div>
-
-  <div class="card-glass why-card" style="text-align:center;">
-    <div style="font-size:2.5rem;margin-bottom:16px;">🎨</div>
-    <h4 style="margin-bottom:10px;">Premium Packaging</h4>
-    <p style="font-size:0.88rem;color:var(--gray-600);">
-      Every gift is beautifully wrapped with luxury packaging.
-    </p>
-  </div>
-
-  <div class="card-glass why-card" style="text-align:center;">
-    <div style="font-size:2.5rem;margin-bottom:16px;">✍️</div>
-    <h4 style="margin-bottom:10px;">Personalization</h4>
-    <p style="font-size:0.88rem;color:var(--gray-600);">
-      Custom messages, names & photos on every order.
-    </p>
-  </div>
-
-  <div class="card-glass why-card" style="text-align:center;">
-    <div style="font-size:2.5rem;margin-bottom:16px;">💯</div>
-    <h4 style="margin-bottom:10px;">100% Satisfaction</h4>
-    <p style="font-size:0.88rem;color:var(--gray-600);">
-      Love it or we'll make it right.
-    </p>
-  </div>
-
-</div>
     </div>
   </section>
 
@@ -353,14 +290,14 @@
   <!-- WhatsApp Float -->
   <a href="https://wa.me/919384845814?text=Hi%20SP%20GlowPetals!%20I%20need%20help%20with%20a%20gift." target="_blank" class="whatsapp-float" title="WhatsApp Us">
     <div class="whatsapp-pulse"></div>
-    <span>💬</span>
+    <i class="fa-brands fa-whatsapp" style="font-size:1.6rem;color:white;"></i>
   </a>
 
   <script type="module">
     import { renderNavbar, renderFooter, productCardHTML, bindProductCardEvents, showLoader, hideLoader, showToast } from './assets/js/components.js';
-    import { getProducts, getBanners, getCategories } from './assets/js/firebase.js';
+    import { getProducts, getBanners, listenCategories } from './assets/js/firebase.js';
 
-    renderNavbar('home');
+    await renderNavbar('home');
     renderFooter();
 
     // Hero Slider
@@ -522,63 +459,42 @@ loadBanners();
         renderGrid('trendingProducts', trending.length ? trending : products.slice(0, 8));
         renderGrid('dealProducts', deals.length ? deals : []);
 
-        async function loadCategories() {
-
-  try {
-
-    const categories = await getCategories();
-
-    const grid = document.getElementById('categoriesGrid');
-
-    const activeCategories = categories.filter(c => c.active !== false);
-
-    grid.innerHTML = activeCategories.map(cat => `
-
-      <div class="category-card"
-        onclick="location.href='/pages/shop.html?cat=${cat.slug}'"
-        style="background:linear-gradient(135deg,#ffd6e7,#ffe0f0)">
-
-        ${cat.image ? `
-
-          <img
-            src="${cat.image}"
-            style="
-              width:100%;
-              height:100%;
-              object-fit:cover;
-            ">
-
-        ` : ''}
-
-        <div class="category-overlay">
-
-          <div>
-
-            <div class="category-name">
-              ${cat.icon || '✨'} ${cat.name}
-            </div>
-
-            <div class="category-count">
-              View All
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    `).join('');
-
-  } catch (e) {
-
-    console.error(e);
-
-  }
-
-}
-
-loadCategories();
+        // Real-time category cards — reflects admin changes instantly
+        const palettes = [
+          'linear-gradient(135deg,#fce4ec,#f48fb1)',
+          'linear-gradient(135deg,#ffd6e7,#e91e63)',
+          'linear-gradient(135deg,#f3e5f5,#9c27b0)',
+          'linear-gradient(135deg,#ffe0f0,#c2185b)',
+          'linear-gradient(135deg,#fce4ec,#ad1457)',
+          'linear-gradient(135deg,#f8bbd0,#880e4f)',
+        ];
+        listenCategories((cats) => {
+          const grid = document.getElementById('categoriesGrid');
+          if (!grid) return;
+          const active = cats.filter(c => c.active !== false).slice(0, 9);
+          if (!active.length) {
+            grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-500);">No categories added yet.</div>';
+            return;
+          }
+          grid.innerHTML = active.map((cat, i) => {
+            const iconClass = cat.icon && cat.icon.startsWith('fa-') ? cat.icon : 'fa-gift';
+            return `
+            <div class="category-card"
+              onclick="location.href='/pages/shop.html?cat=${encodeURIComponent(cat.slug || cat.id)}'"
+              style="background:${palettes[i % palettes.length]}">
+              ${cat.image ? `<img src="${cat.image}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" onerror="this.style.display='none'">` : ''}
+              <div class="category-overlay">
+                <div>
+                  <div class="category-name" style="display:flex;align-items:center;gap:8px;">
+                    <i class="fa-solid ${iconClass}" style="font-size:1rem;opacity:0.9;"></i>
+                    ${cat.name}
+                  </div>
+                  <div class="category-count">View Collection</div>
+                </div>
+              </div>
+            </div>`;
+          }).join('');
+        });
 
         // Search overlay
         const { renderSearch } = await import('./assets/js/components.js');

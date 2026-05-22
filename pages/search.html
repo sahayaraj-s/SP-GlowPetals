@@ -6,6 +6,7 @@
   <title>Search – SP GlowPetals</title>
   <link rel="icon" type="image/jpeg" href="../assets/images/ti.jpeg">
   <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
   <div class="loader-overlay" id="loader"><div class="loader-ring"></div><div class="loader-text">GlowPetals ✦</div></div>
@@ -30,7 +31,7 @@
   <script type="module">
     import { renderNavbar, renderFooter, productCardHTML, bindProductCardEvents, showLoader, hideLoader } from '../assets/js/components.js';
     import { getProducts } from '../assets/js/firebase.js';
-    renderNavbar('');renderFooter();
+    await renderNavbar('');renderFooter();
     const q = new URLSearchParams(location.search).get('q') || '';
     const bar = document.getElementById('searchBar');
     bar.value = q;

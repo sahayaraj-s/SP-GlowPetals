@@ -6,6 +6,7 @@
   <title>Contact Us – SP GlowPetals</title>
   <link rel="icon" type="image/jpeg" href="../assets/images/ti.jpeg">
   <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     .contact-layout{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;}
     .contact-card{background:white;border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:36px;}
@@ -76,8 +77,8 @@
               <div class="contact-info-icon">📍</div>
               <div>
                 <div class="contact-info-label">Location</div>
-                <div class="contact-info-value">Chennai, Tamil Nadu</div>
-                <div class="contact-info-sub">India – 600001</div>
+                <div class="contact-info-value">Dindigul, Tamil Nadu</div>
+                <div class="contact-info-sub">India – 624 306</div>
               </div>
             </div>
             <div class="contact-info-item">
@@ -95,10 +96,10 @@
     </div>
   </section>
   <div id="footer"></div>
-  <a href="https://wa.me/919384845814" target="_blank" class="whatsapp-float"><div class="whatsapp-pulse"></div><span>💬</span></a>
+  <a href="https://wa.me/919384845814" target="_blank" class="whatsapp-float"><div class="whatsapp-pulse"></div><i class="fa-brands fa-whatsapp" style="font-size:1.6rem;color:white;"></i></a>
   <script type="module">
     import { renderNavbar, renderFooter, showToast } from '../assets/js/components.js';
-    renderNavbar('contact'); renderFooter();
+    await renderNavbar('contact'); renderFooter();
     document.getElementById('contactForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const name = document.getElementById('cName').value;
