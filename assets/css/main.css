@@ -681,6 +681,13 @@ p { line-height: 1.7; }
 
 @media (max-width: 768px) {
 
+  /* Hide only Featured & Trending badges on mobile */
+  .badge-featured,
+  .badge-trending{
+    display:none !important;
+  }
+
+
   /* =========================
      NAVBAR MOBILE FIX
   ========================== */
@@ -962,15 +969,6 @@ img{
   max-width:100%;
   height:auto;
 }
-/* Hide only Featured & Trending badges on mobile */
 
-@media (max-width:768px){
-
-  .badge-featured,
-  .badge-trending{
-    display:none !important;
-  }
-
-}
 }
 
