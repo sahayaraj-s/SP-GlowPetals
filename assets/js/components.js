@@ -299,8 +299,7 @@ export function renderFooter() {
     </div>
     <div class="footer-bottom">
       <div class="container">
-        <p>© ${new Date().getFullYear()} <span>SP GlowPetals</span>. All rights reserved. Made with
-          <i class="fa-solid fa-heart" style="color:var(--pink);font-size:0.85em;"></i> in Tamil Nadu.
+        <p>© ${new Date().getFullYear()} <span>SP GlowPetals</span>. All rights reserved. Developed By Alvortix Tech Services.
         </p>
       </div>
     </div>
